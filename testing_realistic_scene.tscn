@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://cx8kgx6xmatg5"]
+
+[ext_resource type="Texture2D" uid="uid://oa56ih2el4i3" path="res://art/deal/floor.png" id="1_rfpf4"]
+[ext_resource type="Texture2D" uid="uid://cysxgw366vahc" path="res://art/deal/wall.png" id="2_vntb4"]
+[ext_resource type="Texture2D" uid="uid://c6j0qt6fxpfdv" path="res://art/deal/table/table_final.png" id="3_mls02"]
+[ext_resource type="Texture2D" uid="uid://bmjpcv5ow3jjl" path="res://art/deal/chair.png" id="4_67vxo"]
+
+[sub_resource type="Gradient" id="Gradient_light"]
+offsets = PackedFloat32Array(0, 0.004166667, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.24166667, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradTex_light"]
+gradient = SubResource("Gradient_light")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[node name="Testing" type="Node2D" unique_id=771147259]
+
+[node name="Floor" type="Sprite2D" parent="." unique_id=1839986254]
+position = Vector2(960, 540)
+texture = ExtResource("1_rfpf4")
+
+[node name="WallReal" type="Sprite2D" parent="." unique_id=1461109278]
+position = Vector2(960, 540)
+texture = ExtResource("2_vntb4")
+
+[node name="TableFinal" type="Sprite2D" parent="." unique_id=249701963]
+position = Vector2(960, 398.00003)
+scale = Vector2(0.5, 0.6800003)
+texture = ExtResource("3_mls02")
+
+[node name="ChairWood" type="Sprite2D" parent="." unique_id=1351924544]
+position = Vector2(979, 419)
+texture = ExtResource("4_67vxo")
+
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=888000010]
+color = Color(0, 0, 0, 1)
+
+[node name="TableLight2" type="PointLight2D" parent="." unique_id=1333264091]
+position = Vector2(980.50006, 115.51959)
+scale = Vector2(1.2701824, 0.5878651)
+color = Color(1, 0.82, 0.55, 1)
+energy = 2.0
+texture = SubResource("GradTex_light")
+texture_scale = 3.0
+
+[node name="TableLight2" type="PointLight2D" parent="TableLight2" unique_id=562586058]
+position = Vector2(-22.24096, 86.11792)
+scale = Vector2(0.38057405, 0.83249384)
+color = Color(1, 0.82, 0.55, 1)
+energy = 2.0
+texture = SubResource("GradTex_light")
+texture_scale = 3.0
+
+[node name="TableLight" type="PointLight2D" parent="." unique_id=888000011]
+position = Vector2(1000.99994, 1104.5)
+scale = Vector2(1.1783855, 0.5957031)
+color = Color(1, 0.82, 0.55, 1)
+energy = 2.0
+texture = SubResource("GradTex_light")
+texture_scale = 3.0

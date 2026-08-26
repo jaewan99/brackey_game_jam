@@ -1,0 +1,81 @@
+[gd_scene format=3 uid="uid://nei528k71ap2"]
+
+[ext_resource type="Shader" uid="uid://dimnd3cx40eim" path="res://art/shader/vignette.gdshader" id="4_vignette"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_qrja6"]
+load_path = "res://.godot/imported/wall.png-56c4f822d5de45a0f44b53d77a216da3.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_co24e"]
+load_path = "res://.godot/imported/화면 캡처 2026-08-25 122828.png-c4ab612fef7c155735277967f7786c2e.ctex"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vignette"]
+shader = ExtResource("4_vignette")
+shader_parameter/shade_color = Color(0, 0, 0, 1)
+shader_parameter/size = 0.7
+shader_parameter/softness = 0.3
+shader_parameter/strength = 1.0
+shader_parameter/flip_x = true
+shader_parameter/flip_y = false
+
+[node name="Testing" type="Node2D" unique_id=771147259]
+
+[node name="wall_redtint" type="ColorRect" parent="." unique_id=361883459]
+offset_right = 1920.0
+offset_bottom = 527.0
+color = Color(0.541176, 0.227451, 0.156863, 0.4)
+
+[node name="wall_redtint" type="ColorRect" parent="wall_redtint" unique_id=1190284423]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 527.0
+color = Color(0.5411765, 0.22745098, 0.15686275, 0.19215687)
+
+[node name="Walls" type="Node2D" parent="." unique_id=729297096]
+
+[node name="Wall2" type="Sprite2D" parent="Walls" unique_id=1653873816]
+position = Vector2(2690.0002, 168)
+scale = Vector2(0.4505208, 0.5)
+texture = SubResource("CompressedTexture2D_qrja6")
+
+[node name="Wall3" type="Sprite2D" parent="Walls" unique_id=1224735240]
+position = Vector2(-770.00006, 168)
+scale = Vector2(0.4505208, 0.5)
+texture = SubResource("CompressedTexture2D_qrja6")
+
+[node name="Wall" type="Sprite2D" parent="Walls" unique_id=774542758]
+position = Vector2(972, 49)
+scale = Vector2(0.4505208, 0.5)
+texture = SubResource("CompressedTexture2D_qrja6")
+
+[node name="Table" type="Sprite2D" parent="." unique_id=421428443]
+position = Vector2(946, 733.9054)
+scale = Vector2(5.8853865, 1.865322)
+texture = SubResource("CompressedTexture2D_co24e")
+
+[node name="VignetteLayer" type="CanvasLayer" parent="." unique_id=888000001]
+layer = 5
+visible = false
+
+[node name="Vignette" type="ColorRect" parent="VignetteLayer" unique_id=888000002]
+material = SubResource("ShaderMaterial_vignette")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -3.0
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Line2D" type="Line2D" parent="." unique_id=1185859064]
+position = Vector2(-14, 126)
+points = PackedVector2Array(1, 1005, 499, 518, 564, 418, 685.01215, 414.69974, 1334, 397, 1921, 904)
+
+[node name="Line2D2" type="Line2D" parent="." unique_id=752604825]
+position = Vector2(3, 123)
+points = PackedVector2Array(825, 387, 814, 196, 1042, 202, 1056, 416)
+
+[node name="Line2D2" type="Line2D" parent="Line2D2" unique_id=603879202]
+position = Vector2(-17.000002, -102.00001)
+rotation = -0.04062508
+points = PackedVector2Array(825, 387, 814, 196, 1042, 202, 1056, 416)

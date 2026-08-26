@@ -149,7 +149,8 @@ func _ai_turn() -> void:
 	var closed := _apply_action("ai", kind)
 
 func _apply_action(who:String, kind:String) -> bool:
-	var other := "ai" if who == "player" else "player"
-	match kind:
-		"fold":
-			_award_pot(other, )
+	return false
+	#var other := "ai" if who == "player" else "player"
+	#match kind:
+		#"fold":
+			#_award_pot(other, )
