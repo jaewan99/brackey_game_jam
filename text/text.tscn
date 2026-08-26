@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://ckevvqih58ul4"]
+
+[ext_resource type="Shader" uid="uid://byhqiah5x6rj7" path="res://text/text.gdshader" id="1_7fjir"]
+[ext_resource type="FontFile" uid="uid://c4lv6nd8vrnay" path="res://art/fontstyle/EBGaramond/EBGaramond12-Regular.ttf" id="1_yjsib"]
+[ext_resource type="Script" uid="uid://dmdoil5esvb2q" path="res://text/label_bob.gd" id="2_7fjir"]
+[ext_resource type="Texture2D" uid="uid://b04p3vo1yd00c" path="res://text/rusty_metal_04_diff_1k.jpg" id="2_pp1rp"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pp1rp"]
+shader = ExtResource("1_7fjir")
+shader_parameter/rust_texture = ExtResource("2_pp1rp")
+shader_parameter/rust_tiling = 3.0
+shader_parameter/rust_amount = 0.7
+shader_parameter/highlight_tint = Color(1, 0.2, 0.15, 1)
+shader_parameter/highlight_strength = 0.0
+
+[node name="Text" type="Node2D" unique_id=748473205]
+
+[node name="Label" type="Label" parent="." unique_id=1628428724]
+material = SubResource("ShaderMaterial_pp1rp")
+offset_right = 40.0
+offset_bottom = 23.0
+mouse_filter = 0
+theme_override_fonts/font = ExtResource("1_yjsib")
+theme_override_font_sizes/font_size = 128
+text = "DEAL"
+script = ExtResource("2_7fjir")
+
+[connection signal="mouse_entered" from="Label" to="Label" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Label" to="Label" method="_on_mouse_exited"]
