@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://cx8kgx6xmatg5"]
 
 [ext_resource type="Script" uid="uid://cd3a8tp3rx0eo" path="res://script/game_manager.gd" id="1_5ucsj"]
-[ext_resource type="Script" uid="uid://d0yra8hcwijss" path="res://script/animation.gd" id="2_5ucsj"]
 [ext_resource type="Shader" uid="uid://dmktbvkpsi1g0" path="res://art/shader/posterize.gdshader" id="2_vgf7k"]
 [ext_resource type="Texture2D" uid="uid://oa56ih2el4i3" path="res://art/deal/floor.png" id="3_5ucsj"]
 [ext_resource type="Script" uid="uid://cej1sqqrt2lhm" path="res://script/deck.gd" id="3_m10kg"]
@@ -15,7 +14,9 @@
 [ext_resource type="Script" uid="uid://dakwh74w1b2v0" path="res://script/ui_manager.gd" id="11_jht16"]
 [ext_resource type="PackedScene" uid="uid://bjhxkrvyuqk6r" path="res://card/card.tscn" id="11_uclpb"]
 [ext_resource type="Texture2D" uid="uid://d2bq54ppbtu7d" path="res://card/cards/2_of_clubs.png" id="13_0opuu"]
+[ext_resource type="FontFile" uid="uid://ypaao7bra87o" path="res://art/fontstyle/EBGaramond/EBGaramond12-Italic.ttf" id="13_x3qnp"]
 [ext_resource type="Texture2D" uid="uid://bijkovjhaoe1t" path="res://card/card_back_red.png" id="14_uclpb"]
+[ext_resource type="Texture2D" uid="uid://b5gsqgwrbul8l" path="res://card/cards/2_of_spades.png" id="16_jht16"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dgrrk"]
 shader = ExtResource("2_vgf7k")
@@ -72,13 +73,11 @@ script = ExtResource("1_5ucsj")
 
 [node name="Script" type="Node" parent="." unique_id=1518884155]
 
-[node name="Deck" type="Node" parent="Script" unique_id=1486684955]
+[node name="Deck" type="Node" parent="Script" unique_id=1486684955 node_paths=PackedStringArray("cards_container")]
 unique_name_in_owner = true
 script = ExtResource("3_m10kg")
-
-[node name="AnimationController" type="Node" parent="Script" unique_id=1885353948]
-unique_name_in_owner = true
-script = ExtResource("2_5ucsj")
+card_scene = ExtResource("11_uclpb")
+cards_container = NodePath("../../CardContainer")
 
 [node name="Postprocessing" type="CanvasLayer" parent="." unique_id=523172640]
 layer = 128
@@ -139,23 +138,29 @@ anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="Start" parent="UI/MainMenuUI" unique_id=1663608405 instance=ExtResource("9_x3qnp")]
+[node name="Settings" parent="UI/MainMenuUI" unique_id=1191972217 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
-offset_left = 1408.0
-offset_top = 119.00003
-offset_right = 1795.0
-offset_bottom = 248.00003
-rotation = 0.40142572
-text = "START"
-
-[node name="Settings" parent="UI/MainMenuUI" unique_id=1628428724 instance=ExtResource("9_x3qnp")]
-layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
 offset_left = 1349.0
 offset_top = 309.00003
 offset_right = 1902.0
 offset_bottom = 438.00003
 rotation = 0.40142572
 text = "SETTING"
+
+[node name="Start" parent="UI/MainMenuUI" unique_id=1663608405 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 1435.0
+offset_top = 118.000015
+offset_right = 1822.0
+offset_bottom = 247.00002
+rotation = 0.40142572
+text = "START"
 
 [node name="PauseMenuUI" type="Control" parent="UI" unique_id=1890518175]
 visible = false
@@ -180,6 +185,9 @@ offset_bottom = 40.0
 
 [node name="Text" parent="UI/DealUI" unique_id=748473205 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
 offset_left = 355.0
 offset_top = 144.0
 offset_right = 683.0
@@ -188,6 +196,9 @@ rotation = 0.30194196
 
 [node name="Text2" parent="UI/DealUI" unique_id=810211377 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
 offset_left = 327.0
 offset_top = 287.0
 offset_right = 655.0
@@ -196,11 +207,84 @@ rotation = 0.30543262
 
 [node name="Text3" parent="UI/DealUI" unique_id=982994333 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
 offset_left = 314.0
 offset_top = 412.0
 offset_right = 642.0
 offset_bottom = 541.0
 rotation = 0.40142572
+
+[node name="TruthLieUI" type="Control" parent="UI" unique_id=1898903494]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Desc" parent="UI/TruthLieUI" unique_id=181616160 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 713.0
+offset_top = 133.0
+offset_right = 1270.0
+offset_bottom = 203.0
+theme_override_font_sizes/font_size = 64
+text = "Tell them what you see"
+
+[node name="Truth" parent="UI/TruthLieUI" unique_id=707509783 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 334.0
+offset_top = 269.0
+offset_right = 795.0
+offset_bottom = 398.0
+text = "TRUTH"
+
+[node name="Lie" parent="UI/TruthLieUI" unique_id=226338806 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 1253.0
+offset_top = 261.0
+offset_right = 1464.0
+offset_bottom = 390.0
+text = "LIE"
+
+[node name="QuestionMarkUI" type="Control" parent="UI" unique_id=1151306578]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="UI/QuestionMarkUI" unique_id=411922202]
+layout_mode = 0
+offset_left = 1055.0001
+offset_top = 873.00006
+offset_right = 1095.0001
+offset_bottom = 1002.00006
+rotation = 0.07853982
+theme_override_fonts/font = ExtResource("13_x3qnp")
+theme_override_font_sizes/font_size = 128
+text = "?"
+
+[node name="Label2" type="Label" parent="UI/QuestionMarkUI" unique_id=689243308]
+layout_mode = 0
+offset_left = 804.00006
+offset_top = 774.0
+offset_right = 844.00006
+offset_bottom = 903.0
+rotation = -0.37524578
+theme_override_fonts/font = ExtResource("13_x3qnp")
+theme_override_font_sizes/font_size = 128
+text = "?"
 
 [node name="PlayerCard" parent="." unique_id=1589171735 instance=ExtResource("11_uclpb")]
 visible = false
@@ -222,23 +306,37 @@ position = Vector2(960, 641)
 scale = Vector2(0.22, 0.137)
 texture = ExtResource("13_0opuu")
 
-[node name="CardPile" type="Node" parent="." unique_id=1937101763]
+[node name="Card" parent="." unique_id=673907052 instance=ExtResource("11_uclpb")]
+visible = false
+position = Vector2(960, 334)
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("16_jht16")
 
-[node name="CardBackRed2" type="Sprite2D" parent="CardPile" unique_id=1441705909]
+[node name="Card2" parent="." unique_id=1691450020 instance=ExtResource("11_uclpb")]
+visible = false
+position = Vector2(960, 879)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("16_jht16")
+
+[node name="CardContainer" type="Node" parent="." unique_id=148490294]
+
+[node name="CardPileDeign" type="Node" parent="." unique_id=1937101763]
+
+[node name="CardBackRed2" type="Sprite2D" parent="CardPileDeign" unique_id=1441705909]
 material = SubResource("ShaderMaterial_0opuu")
 position = Vector2(1772.3801, 737.56146)
 rotation = 1.4189527
 scale = Vector2(0.195, 0.26)
 texture = ExtResource("14_uclpb")
 
-[node name="CardBackRed3" type="Sprite2D" parent="CardPile" unique_id=1089458503]
+[node name="CardBackRed3" type="Sprite2D" parent="CardPileDeign" unique_id=1089458503]
 material = SubResource("ShaderMaterial_0opuu")
 position = Vector2(1812.38, 741.5615)
 rotation = 1.4189527
 scale = Vector2(0.195, 0.26)
 texture = ExtResource("14_uclpb")
 
-[node name="CardBackRed_main" type="Sprite2D" parent="CardPile" unique_id=1650294829]
+[node name="CardBackRed_main" type="Sprite2D" parent="CardPileDeign" unique_id=1650294829]
 material = SubResource("ShaderMaterial_0opuu")
 position = Vector2(1746.38, 733.5615)
 rotation = 1.5707964
@@ -249,5 +347,20 @@ texture = ExtResource("14_uclpb")
 
 [node name="CardSpawnMark" type="Marker2D" parent="Marker" unique_id=1254139016]
 position = Vector2(1746.38, 733.5615)
+rotation = 1.5707964
+scale = Vector2(0.195, 0.26)
+
+[node name="CardPlayerMark" type="Marker2D" parent="Marker" unique_id=1169293998]
+position = Vector2(960, 879)
+rotation = 1.5707964
+scale = Vector2(0.195, 0.26)
+
+[node name="CardOpponentMark" type="Marker2D" parent="Marker" unique_id=1645130223]
+position = Vector2(960, 641)
+rotation = 1.5707964
+scale = Vector2(0.195, 0.26)
+
+[node name="CardOpponentRevealMark" type="Marker2D" parent="Marker" unique_id=1814016200]
+position = Vector2(960, 334)
 rotation = 1.5707964
 scale = Vector2(0.195, 0.26)

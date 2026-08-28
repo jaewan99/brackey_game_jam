@@ -1,12 +1,13 @@
 extends CanvasLayer
 
-enum UIState {NONE, MAIN_MENU, PAUSE_MENU, SETTINGS, DEAL}
+enum UIState {NONE, MAIN_MENU, PAUSE_MENU, SETTINGS, DEAL, TELL, QUESTIONMARK}
 
 @onready var main_menu: Control = $MainMenuUI
 @onready var pause_menu: Control = $PauseMenuUI
 @onready var settings: Control = $SettingMenuUI
 @onready var deal_ui: Control = $DealUI
-
+@onready var tell_ui: Control = $TruthLieUI
+@onready var question_ui: Control = $QuestionMarkUI
 var current_state: UIState
 
 func _ready() -> void:
@@ -18,3 +19,5 @@ func set_state(state: UIState) -> void:
 	pause_menu.visible = (state == UIState.PAUSE_MENU)
 	settings.visible = (state == UIState.SETTINGS)
 	deal_ui.visible = (state == UIState.DEAL)
+	tell_ui.visible = (state == UIState.TELL)
+	question_ui.visible = (state == UIState.QUESTIONMARK)

@@ -1,5 +1,8 @@
 extends Node
 
+@export var card_scene: PackedScene
+@export var cards_container: Node
+
 var deck: Array[int] = []
 
 const SUITS := ["spades","hearts"]
@@ -33,3 +36,16 @@ func get_card_texture_path(card_id:int) -> String:
 	var rank_name: String = RANK_NAMES[get_rank(card_id)]
 	var suit: String = get_suit(card_id)
 	return "res://card/cards/%s_of_%s.png" % [rank_name, suit]
+	
+func spawn_card_at_marker(spawn_point: Vector2, card_id:int) -> Sprite2D:
+	var card_instance = card_scene.instantiate()
+	cards_container.add_child(card_instance)
+	card_instance.global_position = spawn_point
+	return card_instance
+	
+func get_random_card_excluding(exclude_card_id: int) -> int:
+	var candidates: Array[int] = []
+	for i in range(26):
+		if i != exclude_card_id:
+			candidates.append(i)
+	return candidates[randi() % candidates.size()]

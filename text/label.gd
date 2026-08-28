@@ -19,7 +19,7 @@ func _ready() -> void:
 	base_y = position.y
 	game_manager = get_tree().current_scene
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if is_hovering:
 		position.y =  base_y + sin(Time.get_ticks_msec() / 1000.0 * bob_speed) * bob_amplitude
 	else:
@@ -51,5 +51,11 @@ func _handle_input() -> void:
 	match text:
 		"START":
 			await game_manager.set_round()
+		"SETTINGS":
+			print("open settings-label.gd")
+		"TRUTH":
+			await game_manager.tell_truth()
+		"LIE":
+			await game_manager.tell_lie()
 	input_locked = false
 	mouse_filter = Control.MOUSE_FILTER_STOP

@@ -15,12 +15,17 @@ shader_parameter/highlight_strength = 0.0
 
 [node name="Label" type="Label" unique_id=1628428724]
 material = SubResource("ShaderMaterial_pp1rp")
-offset_right = 40.0
-offset_bottom = 23.0
+anchors_preset = -1
+anchor_right = 0.171
+anchor_bottom = 0.119
+offset_right = -0.32000732
+offset_bottom = 0.47999573
 mouse_filter = 0
 theme_override_fonts/font = ExtResource("1_yjsib")
 theme_override_font_sizes/font_size = 128
 text = "DEAL"
+horizontal_alignment = 1
+vertical_alignment = 1
 script = ExtResource("2_7fjir")
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
