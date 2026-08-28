@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://bjhxkrvyuqk6r"]
+
+[ext_resource type="Texture2D" uid="uid://dxrrccsnjtac5" path="res://card/card_back_black.png" id="1_fjcud"]
+[ext_resource type="Shader" uid="uid://ba60jlmxluoai" path="res://card/perspective.gdshader" id="1_trrkg"]
+[ext_resource type="Script" uid="uid://dfn45mye4rqyc" path="res://card/card.gd" id="3_ply2h"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_trrkg"]
+shader = ExtResource("1_trrkg")
+shader_parameter/fov = 90.0
+shader_parameter/cull_back = true
+shader_parameter/y_rot = 0.0
+shader_parameter/x_rot = 0.0
+shader_parameter/inset = 0.0
+
+[node name="Card" type="Sprite2D" unique_id=1589171735]
+material = SubResource("ShaderMaterial_trrkg")
+texture = ExtResource("1_fjcud")
+script = ExtResource("3_ply2h")
+card_back_texture = ExtResource("1_fjcud")

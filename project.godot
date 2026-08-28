@@ -13,7 +13,6 @@ config_version=5
 config/name="brack_game_jam"
 run/main_scene="uid://cx8kgx6xmatg5"
 config/features=PackedStringArray("4.7", "GL Compatibility")
-config/icon="res://icon.svg"
 
 [display]
 

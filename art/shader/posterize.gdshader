@@ -2,7 +2,7 @@ shader_type canvas_item;
 
 uniform sampler2D screen_tex : hint_screen_texture, repeat_disable, filter_nearest;
 
-uniform int color_levels : hint_range(2, 32) = 8;
+uniform int color_levels : hint_range(2, 32) = 6;
 uniform float posterize_strength : hint_range(0.0, 1.0) = 1;
 
 void fragment() {
