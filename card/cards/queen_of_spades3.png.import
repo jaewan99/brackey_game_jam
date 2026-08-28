@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bkr75mfmgh4jx"
-path="res://.godot/imported/queen_of_hearts2.png-e3a137a5b6f7c8487352e6e910053382.ctex"
+uid="uid://cjf75rc31c5fg"
+path="res://.godot/imported/queen_of_spades3.png-4c4451c126e20122be6f19d80548f16c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://card/cards/queen_of_hearts2.png"
-dest_files=["res://.godot/imported/queen_of_hearts2.png-e3a137a5b6f7c8487352e6e910053382.ctex"]
+source_file="res://card/cards/queen_of_spades3.png"
+dest_files=["res://.godot/imported/queen_of_spades3.png-4c4451c126e20122be6f19d80548f16c.ctex"]
 
 [params]
 

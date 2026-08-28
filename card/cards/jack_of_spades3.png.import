@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://coouxk6w6h82i"
-path="res://.godot/imported/ace_of_spades2.png-02df9d0a69ac5bead8a2255509cb11d6.ctex"
+uid="uid://bkpd84agii8t5"
+path="res://.godot/imported/jack_of_spades3.png-375d706fcc4e6aaa22f111a722237444.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://card/cards/ace_of_spades2.png"
-dest_files=["res://.godot/imported/ace_of_spades2.png-02df9d0a69ac5bead8a2255509cb11d6.ctex"]
+source_file="res://card/cards/jack_of_spades3.png"
+dest_files=["res://.godot/imported/jack_of_spades3.png-375d706fcc4e6aaa22f111a722237444.ctex"]
 
 [params]
 

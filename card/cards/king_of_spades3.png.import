@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bgwayxyvsabpg"
-path="res://.godot/imported/king_of_hearts2.png-3bb25d6c84a61ad062c856f5852707b2.ctex"
+uid="uid://di5tli1p00ky"
+path="res://.godot/imported/king_of_spades3.png-2edb202673e811c82ad41a0dd12d7874.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://card/cards/king_of_hearts2.png"
-dest_files=["res://.godot/imported/king_of_hearts2.png-3bb25d6c84a61ad062c856f5852707b2.ctex"]
+source_file="res://card/cards/king_of_spades3.png"
+dest_files=["res://.godot/imported/king_of_spades3.png-2edb202673e811c82ad41a0dd12d7874.ctex"]
 
 [params]
 
