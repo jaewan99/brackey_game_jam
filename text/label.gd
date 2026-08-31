@@ -50,7 +50,7 @@ func _handle_input() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	match text:
 		"START":
-			await game_manager.set_round()
+			await game_manager.start_game()
 		"SETTINGS":
 			print("open settings-label.gd")
 		"TRUTH":

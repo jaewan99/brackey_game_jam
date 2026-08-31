@@ -15,8 +15,10 @@
 [ext_resource type="PackedScene" uid="uid://bjhxkrvyuqk6r" path="res://card/card.tscn" id="11_uclpb"]
 [ext_resource type="Texture2D" uid="uid://d2bq54ppbtu7d" path="res://card/cards/2_of_clubs.png" id="13_0opuu"]
 [ext_resource type="FontFile" uid="uid://ypaao7bra87o" path="res://art/fontstyle/EBGaramond/EBGaramond12-Italic.ttf" id="13_x3qnp"]
+[ext_resource type="PackedScene" uid="uid://ddamdm11qakt" path="res://chips/chips.tscn" id="14_87ufc"]
 [ext_resource type="Texture2D" uid="uid://bijkovjhaoe1t" path="res://card/card_back_red.png" id="14_uclpb"]
 [ext_resource type="Texture2D" uid="uid://b5gsqgwrbul8l" path="res://card/cards/2_of_spades.png" id="16_jht16"]
+[ext_resource type="Texture2D" uid="uid://c03l2xr0vblp7" path="res://art/coins.tres" id="18_idb0s"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dgrrk"]
 shader = ExtResource("2_vgf7k")
@@ -286,6 +288,21 @@ theme_override_fonts/font = ExtResource("13_x3qnp")
 theme_override_font_sizes/font_size = 128
 text = "?"
 
+[node name="CoinsUI" type="Control" parent="UI" unique_id=1676000164]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 39.999878
+offset_bottom = 40.0
+
+[node name="PlayerChips" parent="UI/CoinsUI" unique_id=1729713730 instance=ExtResource("14_87ufc")]
+position = Vector2(350, 925)
+
+[node name="PotsChips" parent="UI/CoinsUI" unique_id=1479083224 instance=ExtResource("14_87ufc")]
+position = Vector2(895, 702)
+
+[node name="OpponentChips" parent="UI/CoinsUI" unique_id=27132752 instance=ExtResource("14_87ufc")]
+position = Vector2(450, 600)
+
 [node name="PlayerCard" parent="." unique_id=1589171735 instance=ExtResource("11_uclpb")]
 visible = false
 material = SubResource("ShaderMaterial_m10kg")
@@ -364,3 +381,11 @@ scale = Vector2(0.195, 0.26)
 position = Vector2(960, 334)
 rotation = 1.5707964
 scale = Vector2(0.195, 0.26)
+
+[node name="CoinPlayerMark" type="Marker2D" parent="Marker" unique_id=1431024912]
+position = Vector2(521, 925)
+
+[node name="Coins" type="Sprite2D" parent="." unique_id=762059090]
+visible = false
+position = Vector2(521, 925)
+texture = ExtResource("18_idb0s")

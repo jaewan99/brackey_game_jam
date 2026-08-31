@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://ddamdm11qakt"]
+
+[ext_resource type="Script" uid="uid://dgkyddxqltb5w" path="res://chips/chips.gd" id="1_072nq"]
+[ext_resource type="Texture2D" uid="uid://c03l2xr0vblp7" path="res://art/coins.tres" id="1_cxt62"]
+
+[node name="Chips" type="Node2D" unique_id=1729713730]
+script = ExtResource("1_072nq")
+chip_texture = ExtResource("1_cxt62")
+
+[node name="Coins" type="Sprite2D" parent="." unique_id=1077750356]
+position = Vector2(64, 61)
+texture = ExtResource("1_cxt62")
+
+[node name="CoinCount" type="Label" parent="." unique_id=1220417826]
+offset_left = 39.0
+offset_right = 79.0
+offset_bottom = 23.0
+text = "n coins"
