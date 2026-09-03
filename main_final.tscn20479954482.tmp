@@ -1,0 +1,392 @@
+[gd_scene format=3 uid="uid://cx8kgx6xmatg5"]
+
+[ext_resource type="Script" uid="uid://cd3a8tp3rx0eo" path="res://script/game_manager.gd" id="1_5ucsj"]
+[ext_resource type="Shader" uid="uid://dmktbvkpsi1g0" path="res://art/shader/posterize.gdshader" id="2_vgf7k"]
+[ext_resource type="Texture2D" uid="uid://oa56ih2el4i3" path="res://art/deal/floor.png" id="3_5ucsj"]
+[ext_resource type="Script" uid="uid://cej1sqqrt2lhm" path="res://script/deck.gd" id="3_m10kg"]
+[ext_resource type="Texture2D" uid="uid://bhmpnfjiasobv" path="res://art/deal/wall.png" id="4_efk6m"]
+[ext_resource type="Texture2D" uid="uid://c6j0qt6fxpfdv" path="res://art/deal/table/table_final.png" id="5_0opuu"]
+[ext_resource type="Texture2D" uid="uid://bmjpcv5ow3jjl" path="res://art/deal/chair.png" id="6_uclpb"]
+[ext_resource type="Texture2D" uid="uid://b6gutn7f6jm8f" path="res://art/shader/shadow_2.png" id="7_m10kg"]
+[ext_resource type="Texture2D" uid="uid://dclk0e3axinb2" path="res://art/dust.png" id="8_jht16"]
+[ext_resource type="PackedScene" uid="uid://ckevvqih58ul4" path="res://text/text.tscn" id="9_x3qnp"]
+[ext_resource type="Shader" uid="uid://ba60jlmxluoai" path="res://card/perspective.gdshader" id="11_0opuu"]
+[ext_resource type="Script" uid="uid://dakwh74w1b2v0" path="res://script/ui_manager.gd" id="11_jht16"]
+[ext_resource type="PackedScene" uid="uid://bjhxkrvyuqk6r" path="res://card/card.tscn" id="11_uclpb"]
+[ext_resource type="Texture2D" uid="uid://d2bq54ppbtu7d" path="res://card/cards/2_of_clubs.png" id="13_0opuu"]
+[ext_resource type="FontFile" uid="uid://ypaao7bra87o" path="res://art/fontstyle/EBGaramond/EBGaramond12-Italic.ttf" id="13_x3qnp"]
+[ext_resource type="PackedScene" uid="uid://ddamdm11qakt" path="res://chips/chips.tscn" id="14_87ufc"]
+[ext_resource type="Texture2D" uid="uid://bijkovjhaoe1t" path="res://card/card_back_red.png" id="14_uclpb"]
+[ext_resource type="Texture2D" uid="uid://b5gsqgwrbul8l" path="res://card/cards/2_of_spades.png" id="16_jht16"]
+[ext_resource type="Texture2D" uid="uid://c03l2xr0vblp7" path="res://art/coins.tres" id="18_idb0s"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dgrrk"]
+shader = ExtResource("2_vgf7k")
+shader_parameter/color_levels = 9
+shader_parameter/posterize_strength = 1.0
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_oroq7"]
+particle_flag_disable_z = true
+emission_shape_scale = Vector3(75, 30, 0)
+emission_shape = 3
+emission_box_extents = Vector3(10, 10, 10)
+initial_velocity_min = 2.0
+initial_velocity_max = 8.0
+angular_velocity_min = 0.9999839
+angular_velocity_max = 2.9999838
+gravity = Vector3(0, 2, 0)
+scale_min = 0.5
+turbulence_enabled = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_m10kg"]
+shader = ExtResource("11_0opuu")
+shader_parameter/fov = 90.0
+shader_parameter/cull_back = true
+shader_parameter/y_rot = 0.0
+shader_parameter/x_rot = 18.462009426945
+shader_parameter/inset = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_uclpb"]
+shader = ExtResource("11_0opuu")
+shader_parameter/fov = 90.0
+shader_parameter/cull_back = true
+shader_parameter/y_rot = -44.75599357591
+shader_parameter/x_rot = 29.890009969775008
+shader_parameter/inset = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_efk6m"]
+shader = ExtResource("11_0opuu")
+shader_parameter/fov = 90.0
+shader_parameter/cull_back = true
+shader_parameter/y_rot = 0.0
+shader_parameter/x_rot = 18.462009426945
+shader_parameter/inset = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0opuu"]
+shader = ExtResource("11_0opuu")
+shader_parameter/fov = 90.0
+shader_parameter/cull_back = true
+shader_parameter/y_rot = -44.75599357591
+shader_parameter/x_rot = 29.890009969775008
+shader_parameter/inset = 0.110000005225
+
+[node name="Main" type="Node2D" unique_id=771147259]
+script = ExtResource("1_5ucsj")
+
+[node name="Script" type="Node" parent="." unique_id=1518884155]
+
+[node name="Deck" type="Node" parent="Script" unique_id=1486684955 node_paths=PackedStringArray("cards_container")]
+unique_name_in_owner = true
+script = ExtResource("3_m10kg")
+card_scene = ExtResource("11_uclpb")
+cards_container = NodePath("../../CardContainer")
+
+[node name="Postprocessing" type="CanvasLayer" parent="." unique_id=523172640]
+layer = 128
+
+[node name="posterize" type="ColorRect" parent="Postprocessing" unique_id=1837073073]
+material = SubResource("ShaderMaterial_dgrrk")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Floor" type="Sprite2D" parent="." unique_id=1839986254]
+position = Vector2(960, 540)
+texture = ExtResource("3_5ucsj")
+
+[node name="WallReal" type="Sprite2D" parent="." unique_id=1461109278]
+position = Vector2(960, 540)
+texture = ExtResource("4_efk6m")
+
+[node name="TableFinal" type="Sprite2D" parent="." unique_id=249701963]
+position = Vector2(1069, 398.00003)
+scale = Vector2(0.9458333, 0.6800003)
+texture = ExtResource("5_0opuu")
+
+[node name="ChairWood" type="Sprite2D" parent="." unique_id=1351924544]
+position = Vector2(960, 419)
+texture = ExtResource("6_uclpb")
+
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=888000010]
+color = Color(0, 0, 0, 1)
+
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=397553667]
+position = Vector2(960.00006, -44)
+scale = Vector2(2.524, 3.1)
+texture = ExtResource("7_m10kg")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=85898494]
+position = Vector2(998, 268)
+emitting = false
+amount = 40
+texture = ExtResource("8_jht16")
+lifetime = 9999.0
+one_shot = true
+explosiveness = 1.0
+randomness = 1.0
+process_material = SubResource("ParticleProcessMaterial_oroq7")
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1533912204]
+unique_name_in_owner = true
+layer = 150
+script = ExtResource("11_jht16")
+
+[node name="MainMenuUI" type="Control" parent="UI" unique_id=432341710]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Settings" parent="UI/MainMenuUI" unique_id=1191972217 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 1349.0
+offset_top = 309.00003
+offset_right = 1902.0
+offset_bottom = 438.00003
+rotation = 0.40142572
+text = "SETTING"
+
+[node name="Start" parent="UI/MainMenuUI" unique_id=1663608405 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 1435.0
+offset_top = 118.000015
+offset_right = 1822.0
+offset_bottom = 247.00002
+rotation = 0.40142572
+text = "START"
+
+[node name="PauseMenuUI" type="Control" parent="UI" unique_id=1890518175]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SettingMenuUI" type="Control" parent="UI" unique_id=271173484]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="DealUI" type="Control" parent="UI" unique_id=1184642475]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Text" parent="UI/DealUI" unique_id=748473205 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 355.0
+offset_top = 144.0
+offset_right = 683.0
+offset_bottom = 273.0
+rotation = 0.30194196
+
+[node name="Text2" parent="UI/DealUI" unique_id=810211377 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 327.0
+offset_top = 287.0
+offset_right = 655.0
+offset_bottom = 416.0
+rotation = 0.30543262
+
+[node name="Text3" parent="UI/DealUI" unique_id=982994333 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 314.0
+offset_top = 412.0
+offset_right = 642.0
+offset_bottom = 541.0
+rotation = 0.40142572
+
+[node name="TruthLieUI" type="Control" parent="UI" unique_id=1898903494]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Desc" parent="UI/TruthLieUI" unique_id=181616160 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 713.0
+offset_top = 133.0
+offset_right = 1270.0
+offset_bottom = 203.0
+theme_override_font_sizes/font_size = 64
+text = "Tell them what you see"
+
+[node name="Truth" parent="UI/TruthLieUI" unique_id=707509783 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 334.0
+offset_top = 269.0
+offset_right = 795.0
+offset_bottom = 398.0
+text = "TRUTH"
+
+[node name="Lie" parent="UI/TruthLieUI" unique_id=226338806 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 1253.0
+offset_top = 261.0
+offset_right = 1464.0
+offset_bottom = 390.0
+text = "LIE"
+
+[node name="QuestionMarkUI" type="Control" parent="UI" unique_id=1151306578]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="UI/QuestionMarkUI" unique_id=411922202]
+layout_mode = 0
+offset_left = 1055.0001
+offset_top = 873.00006
+offset_right = 1095.0001
+offset_bottom = 1002.00006
+rotation = 0.07853982
+theme_override_fonts/font = ExtResource("13_x3qnp")
+theme_override_font_sizes/font_size = 128
+text = "?"
+
+[node name="Label2" type="Label" parent="UI/QuestionMarkUI" unique_id=689243308]
+layout_mode = 0
+offset_left = 804.00006
+offset_top = 774.0
+offset_right = 844.00006
+offset_bottom = 903.0
+rotation = -0.37524578
+theme_override_fonts/font = ExtResource("13_x3qnp")
+theme_override_font_sizes/font_size = 128
+text = "?"
+
+[node name="CoinsUI" type="Control" parent="UI" unique_id=1676000164]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 39.999878
+offset_bottom = 40.0
+
+[node name="PlayerChips" parent="UI/CoinsUI" unique_id=1729713730 instance=ExtResource("14_87ufc")]
+position = Vector2(350, 925)
+
+[node name="PotsChips" parent="UI/CoinsUI" unique_id=1479083224 instance=ExtResource("14_87ufc")]
+position = Vector2(895, 702)
+
+[node name="OpponentChips" parent="UI/CoinsUI" unique_id=27132752 instance=ExtResource("14_87ufc")]
+position = Vector2(450, 600)
+
+[node name="PlayerCard" parent="." unique_id=1589171735 instance=ExtResource("11_uclpb")]
+visible = false
+material = SubResource("ShaderMaterial_m10kg")
+position = Vector2(960, 879)
+scale = Vector2(0.335, 0.277)
+
+[node name="PlayerCard2" parent="." unique_id=1964099226 instance=ExtResource("11_uclpb")]
+visible = false
+material = SubResource("ShaderMaterial_uclpb")
+position = Vector2(1746.38, 733.5615)
+rotation = 1.5707964
+scale = Vector2(0.195, 0.26)
+
+[node name="2OfClubs3" type="Sprite2D" parent="." unique_id=290775104]
+visible = false
+material = SubResource("ShaderMaterial_efk6m")
+position = Vector2(960, 641)
+scale = Vector2(0.22, 0.137)
+texture = ExtResource("13_0opuu")
+
+[node name="Card" parent="." unique_id=673907052 instance=ExtResource("11_uclpb")]
+visible = false
+position = Vector2(960, 334)
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("16_jht16")
+
+[node name="Card2" parent="." unique_id=1691450020 instance=ExtResource("11_uclpb")]
+visible = false
+position = Vector2(960, 879)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("16_jht16")
+
+[node name="CardContainer" type="Node" parent="." unique_id=148490294]
+
+[node name="CardPileDeign" type="Node" parent="." unique_id=1937101763]
+
+[node name="CardBackRed2" type="Sprite2D" parent="CardPileDeign" unique_id=1441705909]
+material = SubResource("ShaderMaterial_0opuu")
+position = Vector2(1772.3801, 737.56146)
+rotation = 1.4189527
+scale = Vector2(0.195, 0.26)
+texture = ExtResource("14_uclpb")
+
+[node name="CardBackRed3" type="Sprite2D" parent="CardPileDeign" unique_id=1089458503]
+material = SubResource("ShaderMaterial_0opuu")
+position = Vector2(1812.38, 741.5615)
+rotation = 1.4189527
+scale = Vector2(0.195, 0.26)
+texture = ExtResource("14_uclpb")
+
+[node name="CardBackRed_main" type="Sprite2D" parent="CardPileDeign" unique_id=1650294829]
+material = SubResource("ShaderMaterial_0opuu")
+position = Vector2(1746.38, 733.5615)
+rotation = 1.5707964
+scale = Vector2(0.195, 0.26)
+texture = ExtResource("14_uclpb")
+
+[node name="Marker" type="Node" parent="." unique_id=271197619]
+
+[node name="CardSpawnMark" type="Marker2D" parent="Marker" unique_id=1254139016]
+position = Vector2(1746.38, 733.5615)
+rotation = 1.5707964
+scale = Vector2(0.195, 0.26)
+
+[node name="CardPlayerMark" type="Marker2D" parent="Marker" unique_id=1169293998]
+position = Vector2(960, 879)
+rotation = 1.5707964
+scale = Vector2(0.195, 0.26)
+
+[node name="CardOpponentMark" type="Marker2D" parent="Marker" unique_id=1645130223]
+position = Vector2(960, 641)
+rotation = 1.5707964
+scale = Vector2(0.195, 0.26)
+
+[node name="CardOpponentRevealMark" type="Marker2D" parent="Marker" unique_id=1814016200]
+position = Vector2(960, 334)
+rotation = 1.5707964
+scale = Vector2(0.195, 0.26)
+
+[node name="CoinPlayerMark" type="Marker2D" parent="Marker" unique_id=1431024912]
+position = Vector2(521, 925)
+
+[node name="Coins" type="Sprite2D" parent="." unique_id=762059090]
+visible = false
+position = Vector2(521, 925)
+texture = ExtResource("18_idb0s")

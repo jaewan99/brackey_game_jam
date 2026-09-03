@@ -53,9 +53,23 @@ func _handle_input() -> void:
 			await game_manager.start_game()
 		"SETTINGS":
 			print("open settings-label.gd")
+		# tell phase
 		"TRUTH":
 			await game_manager.tell_truth()
 		"LIE":
 			await game_manager.tell_lie()
+		# deal phase
+		"CHECK":
+			await game_manager.check()
+		"RAISE":
+			await game_manager.raise()
+		"CALL":
+			await game_manager.call_deal()
+		"FOLD":
+			await game_manager.fold()
+		"LIAR":
+			await game_manager.liar()
+		"ALL IN":
+			await game_manager.all_in()
 	input_locked = false
 	mouse_filter = Control.MOUSE_FILTER_STOP

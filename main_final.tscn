@@ -179,13 +179,12 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="DealUI" type="Control" parent="UI" unique_id=1184642475]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="Text" parent="UI/DealUI" unique_id=748473205 instance=ExtResource("9_x3qnp")]
+[node name="CHECK" parent="UI/DealUI" unique_id=748473205 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0
@@ -195,28 +194,67 @@ offset_top = 144.0
 offset_right = 683.0
 offset_bottom = 273.0
 rotation = 0.30194196
+text = "CHECK"
 
-[node name="Text2" parent="UI/DealUI" unique_id=810211377 instance=ExtResource("9_x3qnp")]
+[node name="RAISE" parent="UI/DealUI" unique_id=810211377 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 327.0
-offset_top = 287.0
-offset_right = 655.0
-offset_bottom = 416.0
+offset_left = 345.99997
+offset_top = 285.99997
+offset_right = 702.0
+offset_bottom = 414.99997
 rotation = 0.30543262
+text = "RAISE"
 
-[node name="Text3" parent="UI/DealUI" unique_id=982994333 instance=ExtResource("9_x3qnp")]
+[node name="CALL" parent="UI/DealUI" unique_id=982994333 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 314.0
-offset_top = 412.0
-offset_right = 642.0
-offset_bottom = 541.0
+offset_left = 378.00003
+offset_top = 136.0
+offset_right = 706.0
+offset_bottom = 265.0
 rotation = 0.40142572
+text = "CALL"
+
+[node name="FOLD" parent="UI/DealUI" unique_id=1628428724 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 352.00012
+offset_top = 424.00003
+offset_right = 686.0001
+offset_bottom = 553.0
+rotation = 0.40142572
+text = "FOLD"
+
+[node name="ALLIN" parent="UI/DealUI" unique_id=1193314453 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 1193.0001
+offset_top = 180.00003
+offset_right = 1527.0001
+offset_bottom = 309.00003
+rotation = 0.40142572
+text = "ALL IN"
+
+[node name="LIAR" parent="UI/DealUI" unique_id=1112492398 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 1168.0001
+offset_top = 348.00006
+offset_right = 1496.0001
+offset_bottom = 477.00006
+rotation = 0.40142572
+text = "LIAR"
 
 [node name="TruthLieUI" type="Control" parent="UI" unique_id=1898903494]
 visible = false
@@ -289,6 +327,7 @@ theme_override_font_sizes/font_size = 128
 text = "?"
 
 [node name="CoinsUI" type="Control" parent="UI" unique_id=1676000164]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 39.999878

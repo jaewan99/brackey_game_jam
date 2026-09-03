@@ -16,6 +16,11 @@ var ANTE := 1
 var player_chips:= START_CHIPS
 var opponent_chips:= START_CHIPS
 var pot := 0
+var BET_UNIT := 3
+var to_call := 0
+enum Turn {PLAYER, OPPONENT}
+var current_turn: Turn= Turn.PLAYER
+
 @onready var deck: Node = %Deck
 @onready var ui = %UI
 
@@ -49,9 +54,18 @@ func _distribute_starting_chips() -> void:
 func set_round() -> void:
 	# choose opponent
 	# set the index for the round
+	await _ante_phase()
 	await _draw_phase()
 	await _open_tell_phase()
-	#await _start_deal_phase()
+
+func _ante_phase() -> void:
+	var player_ante = min(player_chips, ANTE)
+	var opponent_ante = min(opponent_chips, ANTE)
+	player_chips -= player_ante
+	opponent_chips -= opponent_ante
+	pot += player_ante + opponent_ante
+	ui.update_chip_visuals(player_chips, opponent_chips, pot)
+	
 
 func _draw_phase() -> void:
 	# get a card(int) from the deck
@@ -92,10 +106,67 @@ func _finish_tell_phase() -> void:
 	ui.set_state(ui.UIState.NONE)
 	print("Opponent told player: ", deck.get_rank(opponent_tell))
 	await player_card.reveal_to_forehead(card_player_point, player_card.TransformPreset.PLAYERREVEAL,deck.get_card_texture_path(opponent_tell))
-	ui.set_state(ui.UIState.QUESTIONMARK)
+	ui.set_visible_custom(ui.UIState.QUESTIONMARK)
+	_start_deal_phase()
 
 #--------------------------------------deal phase
-
 func _start_deal_phase() -> void:
-	return
+	ui.set_state(ui.UIState.DEAL)
+	current_turn = Turn.PLAYER
+	to_call = 0
+	ui.update_action_visibility(current_turn == Turn.PLAYER, to_call)
+
+func check() -> void:
+	print("Player checks.")
+	_close_player_turn()
+
+func call_deal() -> void:
+	var amount = min(player_chips, to_call)
+	player_chips -= amount
+	pot += amount
+	to_call = 0
+	ui.update_chip_visuals(player_chips,null,pot)
 	
+	_close_player_turn()
+	
+func raise() -> void:
+	var amount = min(player_chips, BET_UNIT)
+	player_chips -= amount
+	pot += amount
+	to_call = amount
+	ui.update_chip_visuals(player_chips,null,pot)
+	
+	_close_player_turn()
+	
+func fold() -> void:
+	# awardpot(opponent)
+	# end hand
+	_close_player_turn()
+
+func liar() -> void:
+	_close_player_turn()
+
+func all_in() -> void:
+	var amount = player_chips
+	player_chips -= amount
+	pot += amount
+	to_call = amount
+	ui.update_chip_visuals(player_chips,null,pot)
+	_close_player_turn()
+	
+
+func _close_player_turn() ->void:
+	current_turn = Turn.OPPONENT
+	ui.update_action_visibility(current_turn == Turn.PLAYER, to_call)
+	ai_decision()
+
+#------------------------------------------------- open phase
+
+
+#------------------------------------------------- ai
+func ai_decision()-> void:
+#	# close the ui
+	# ai decide here
+	# reopen the ui
+	current_turn = Turn.PLAYER
+	ui.update_action_visibility(current_turn == Turn.PLAYER, to_call)
