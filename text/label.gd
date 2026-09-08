@@ -60,9 +60,9 @@ func _handle_input() -> void:
 			await game_manager.tell_lie()
 		# deal phase
 		"CHECK":
-			await game_manager.check()
+			await player_controller.submit(Action.Type.CHECK)
 		"RAISE":
-			await game_manager.raise()
+			await player_controller.submit(Action.Type.RAISE)
 		"CALL":
 			await game_manager.call_deal()
 		"FOLD":

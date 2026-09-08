@@ -22,12 +22,15 @@ static func win_prob_vs(player_card:int)-> float:
 	var ties := 1
 	return (float(wins) + .5 * float(ties)) / 13.0
 
-func decide(state:Dictionary) -> String:
+func decide(state:Dictionary) -> Action.Type:
 	var player_card: int = state["player_card"]
 	var pot: int = state["pot"]
 	var to_call: int = state["to_call"]
 	var ai_chips: int = state["ai_chips"]
 	var player_aggression: float = state.get("player_aggression, 0.0")
+	
+	if ai_chips <= 0:
+		return Action.Type.CHECK
 	
 	var win_prob := win_prob_vs(player_card)
 	# Player betting hard is weak evidence the AI's own card is bad (they can see it).
@@ -39,13 +42,19 @@ func decide(state:Dictionary) -> String:
 		return _facing_bet(win_prob, pot, to_call, ai_chips, bluffing)
 	return _open(win_prob,ai_chips, bluffing)
 	
-func _facing_bet(win_prob: float, pot:int, to_call:int, ai_chips:int, bluffing:bool) -> String:
-	return "call"
+func _facing_bet(win_prob: float, pot: int, to_call: int, ai_chips: int,bluffing: bool) -> Action.Type:
+	var pot_odds := float(to_call) / float(pot + to_call)
+	var raise_threshold := 0.62 - aggression * 0.15
+	if (win_prob >= raise_threshold or bluffing) and ai_chips > to_call:
+			return Action.Type.RAISE
+	if win_prob >= maxf(pot_odds, fold_floor):
+		return Action.Type.CALL
+	return Action.Type.FOLD
+	
 func _open(win_prob:float,ai_chips:int, bluffing:bool):
-	return "call"
-	
-	
-	
-	
+	var bet_threshold := 0.55 - aggression * 0.2
+	if win_prob >= bet_threshold or bluffing:
+		return Action.Type.RAISE
+	return Action.Type.CHECK
 	
 	
