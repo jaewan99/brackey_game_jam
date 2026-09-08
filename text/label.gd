@@ -60,16 +60,16 @@ func _handle_input() -> void:
 			await game_manager.tell_lie()
 		# deal phase
 		"CHECK":
-			await player_controller.submit(Action.Type.CHECK)
+			await game_manager.player_controller.submit(Action.Type.CHECK)
 		"RAISE":
-			await player_controller.submit(Action.Type.RAISE)
+			await game_manager.player_controller.submit(Action.Type.RAISE)
 		"CALL":
-			await game_manager.call_deal()
+			await game_manager.player_controller.submit(Action.Type.CALL)
 		"FOLD":
-			await game_manager.fold()
+			await game_manager.player_controller.submit(Action.Type.FOLD)
 		"LIAR":
-			await game_manager.liar()
+			await game_manager.player_controller.submit(Action.Type.LIAR)
 		"ALL IN":
-			await game_manager.all_in()
+			await game_manager.player_controller.submit(Action.Type.ALLIN)
 	input_locked = false
 	mouse_filter = Control.MOUSE_FILTER_STOP

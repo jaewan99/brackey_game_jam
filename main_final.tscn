@@ -151,8 +151,6 @@ offset_right = 1902.0
 offset_bottom = 438.00003
 rotation = 0.40142572
 text = "SETTING"
-bob_amplitude = null
-bob_speed = null
 
 [node name="Start" parent="UI/MainMenuUI" unique_id=1663608405 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
@@ -165,8 +163,6 @@ offset_right = 1822.0
 offset_bottom = 247.00002
 rotation = 0.40142572
 text = "START"
-bob_amplitude = null
-bob_speed = null
 
 [node name="PauseMenuUI" type="Control" parent="UI" unique_id=1890518175]
 visible = false
@@ -199,8 +195,6 @@ offset_right = 683.0
 offset_bottom = 273.0
 rotation = 0.30194196
 text = "CHECK"
-bob_amplitude = null
-bob_speed = null
 
 [node name="RAISE" parent="UI/DealUI" unique_id=810211377 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
@@ -213,8 +207,6 @@ offset_right = 702.0
 offset_bottom = 414.99997
 rotation = 0.30543262
 text = "RAISE"
-bob_amplitude = null
-bob_speed = null
 
 [node name="CALL" parent="UI/DealUI" unique_id=982994333 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
@@ -227,8 +219,6 @@ offset_right = 706.0
 offset_bottom = 265.0
 rotation = 0.40142572
 text = "CALL"
-bob_amplitude = null
-bob_speed = null
 
 [node name="FOLD" parent="UI/DealUI" unique_id=1628428724 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
@@ -241,8 +231,6 @@ offset_right = 686.0001
 offset_bottom = 553.0
 rotation = 0.40142572
 text = "FOLD"
-bob_amplitude = null
-bob_speed = null
 
 [node name="ALLIN" parent="UI/DealUI" unique_id=1193314453 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
@@ -255,8 +243,6 @@ offset_right = 1527.0001
 offset_bottom = 309.00003
 rotation = 0.40142572
 text = "ALL IN"
-bob_amplitude = null
-bob_speed = null
 
 [node name="LIAR" parent="UI/DealUI" unique_id=1112492398 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
@@ -269,8 +255,6 @@ offset_right = 1496.0001
 offset_bottom = 477.00006
 rotation = 0.40142572
 text = "LIAR"
-bob_amplitude = null
-bob_speed = null
 
 [node name="TruthLieUI" type="Control" parent="UI" unique_id=1898903494]
 visible = false
@@ -290,8 +274,6 @@ offset_right = 1270.0
 offset_bottom = 203.0
 theme_override_font_sizes/font_size = 64
 text = "Tell them what you see"
-bob_amplitude = null
-bob_speed = null
 
 [node name="Truth" parent="UI/TruthLieUI" unique_id=707509783 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
@@ -303,8 +285,6 @@ offset_top = 269.0
 offset_right = 795.0
 offset_bottom = 398.0
 text = "TRUTH"
-bob_amplitude = null
-bob_speed = null
 
 [node name="Lie" parent="UI/TruthLieUI" unique_id=226338806 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
@@ -316,8 +296,6 @@ offset_top = 261.0
 offset_right = 1464.0
 offset_bottom = 390.0
 text = "LIE"
-bob_amplitude = null
-bob_speed = null
 
 [node name="QuestionMarkUI" type="Control" parent="UI" unique_id=1151306578]
 visible = false

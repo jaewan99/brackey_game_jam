@@ -27,7 +27,12 @@ func decide(state:Dictionary) -> Action.Type:
 	var pot: int = state["pot"]
 	var to_call: int = state["to_call"]
 	var ai_chips: int = state["ai_chips"]
-	var player_aggression: float = state.get("player_aggression, 0.0")
+	var player_aggression: float = state.get("player_aggression", 0.0)
+	
+	# very rough: if I was told a monster card, a suspicious AI may cry foul
+	var told_strength := float(state.get("my_told_card", 8) - 2) / 12.0   # 0..1
+	if told_strength > 0.85 and _rng.randf() < read_sensitivity:
+		return Action.Type.LIAR
 	
 	if ai_chips <= 0:
 		return Action.Type.CHECK
