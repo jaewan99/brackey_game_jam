@@ -112,10 +112,7 @@ func _opponent_tell() -> void:
 	else:
 		opponent_tell = player_card_number
 func _finish_tell_phase() -> void:
-	print("Player told opponent: ", deck.get_rank(player_tell))
-	#print("My card: ", deck.get_rank(player_card_number))
 	ui.set_state(ui.UIState.NONE)
-	print("Opponent told player: ", deck.get_rank(opponent_tell))
 	await player_card.reveal_to_forehead(card_player_point, player_card.TransformPreset.PLAYERREVEAL,deck.get_card_texture_path(opponent_tell))
 	ui.set_visible_custom(ui.UIState.QUESTIONMARK)
 	_start_deal_phase()
@@ -154,14 +151,11 @@ func _player_turn() -> void:
 	var view := _build_view(Turn.PLAYER)
 	var action = await player_controller.request_action(view)
 	apply_action(Turn.PLAYER, action)
-	#print("player", Action.Type.keys()[action])
 	if _hand_over(action): return
-	_close_player_turn()
-
-func _close_player_turn() ->void:
 	current_turn = Turn.OPPONENT
 	ui.update_action_visibility(current_turn == Turn.PLAYER, to_call)
-	ai_decision()
+	await ai_decision()
+
 
 func _commit(is_player: bool, amount:int) -> void:
 	if is_player:
@@ -171,13 +165,60 @@ func _commit(is_player: bool, amount:int) -> void:
 	pot += amount
 #------------------------------------------------- open phase
 func _open_phase() -> void:
-	ui.set_state()
+	ui.set_state(ui.UIState.NONE)
+	
+	# reveal the player's OWN real card
+	await player_card.reveal_to_forehead(card_player_point, 
+		player_card.TransformPreset.PLAYERREVEAL,
+		deck.get_card_texture_path(player_card_number))
+	match _resolve_winner():
+		Turn.PLAYER:
+			player_chips += pot
+			pot = 0
+			print("player wins")
+		Turn.OPPONENT:
+			opponent_chips += pot
+			pot = 0
+			print("opponent wins")
+		_:
+			print("Draw")
+	ui.update_chip_visuals(player_chips, opponent_chips, pot)
+	await _cleanup_round()
+	_next_round()
 
+# returns Turn.PLAYER / Turn.OPPONENT, or null on a tie (carry pot)
+func _resolve_winner():
+	# a fold ends the hand with no showdown
+	if _folded_seat == Turn.PLAYER:
+		return Turn.OPPONENT
+	if _folded_seat == Turn.OPPONENT:
+		return Turn.PLAYER
+	# showdown: compare ranks only (suits don't break ties)
+	var p_rank :int = deck.get_rank(player_card_number)
+	var o_rank :int = deck.get_rank(opponent_card_number)
+	print("resolve",p_rank, o_rank)
+	if p_rank > o_rank:
+		return Turn.PLAYER
+	if o_rank > p_rank:
+		return Turn.OPPONENT
+	return null   # equal rank → tie
+
+func _cleanup_round() -> void:
+	if is_instance_valid(player_card):
+		player_card.queue_free()
+	if is_instance_valid(opponent_card):
+		opponent_card.queue_free()
+
+func _next_round() -> void:
+	if player_chips <= 0 or opponent_chips <= 0:
+		print("Game over")            # TODO: real end-game / results screen
+		return
+	set_round()   # ante + draw + tell + deal again; pot persists so carryover work
 #------------------------------------------------- ai / opponent
 func ai_decision()-> void:
 	var action: Action.Type = await opponent_controller.request_action(_build_view(Turn.OPPONENT))
-	print("ai", Action.Type.keys()[action])
 	apply_action(Turn.OPPONENT, action)
+	print(action)
 	current_turn = Turn.PLAYER
 	ui.update_action_visibility(current_turn == Turn.PLAYER, to_call)
 	if _hand_over(action): return
