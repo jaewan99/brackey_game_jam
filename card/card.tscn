@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://dxrrccsnjtac5" path="res://card/card_back_black.png" id="1_fjcud"]
 [ext_resource type="Shader" uid="uid://ba60jlmxluoai" path="res://card/perspective.gdshader" id="1_trrkg"]
 [ext_resource type="Script" uid="uid://dfn45mye4rqyc" path="res://card/card.gd" id="3_ply2h"]
+[ext_resource type="FontFile" uid="uid://ypaao7bra87o" path="res://art/fontstyle/EBGaramond/EBGaramond12-Italic.ttf" id="4_fdnr0"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_trrkg"]
 shader = ExtResource("1_trrkg")
@@ -17,3 +18,34 @@ material = SubResource("ShaderMaterial_trrkg")
 texture = ExtResource("1_fjcud")
 script = ExtResource("3_ply2h")
 card_back_texture = ExtResource("1_fjcud")
+
+[node name="QuestionMarkUI" type="Control" parent="." unique_id=1152752366]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="QuestionMarkUI" unique_id=1532257283]
+layout_mode = 0
+offset_left = 392.00003
+offset_top = 11.0
+offset_right = 432.00003
+offset_bottom = 140.0
+rotation = 0.07853982
+scale = Vector2(1.5, 1.5)
+theme_override_fonts/font = ExtResource("4_fdnr0")
+theme_override_font_sizes/font_size = 128
+text = "?"
+
+[node name="Label2" type="Label" parent="QuestionMarkUI" unique_id=1761726481]
+layout_mode = 0
+offset_left = -518.0
+offset_top = -275.0
+offset_right = -478.0
+offset_bottom = -146.0
+rotation = -0.37524578
+scale = Vector2(1.5, 1.5)
+theme_override_fonts/font = ExtResource("4_fdnr0")
+theme_override_font_sizes/font_size = 128
+text = "?"

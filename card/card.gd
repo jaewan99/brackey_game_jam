@@ -2,8 +2,9 @@ extends Sprite2D
 
 @export var card_back_texture: Texture2D
 @export var card_face_texture: Texture2D
-
+@export var is_player :bool = true
 enum TransformPreset { START, PLAYER, OPPONENT, PLAYERREVEAL, OPPONENTREVEAL}
+@onready var question_ui: Control = $QuestionMarkUI
 
 const TRANSFORM_PRESETS := {
 	TransformPreset.START: {
@@ -82,12 +83,15 @@ func reveal_to_forehead(target_position: Vector2, preset: TransformPreset, card_
 	tween.tween_method(_set_x_rot, material.get_shader_parameter("x_rot"), card_transform_data["x_rot"], duration)
 	tween.tween_method(_set_y_rot, material.get_shader_parameter("y_rot"), card_transform_data["y_rot"], duration)
 	tween.tween_method(_set_inset, material.get_shader_parameter("inset"), card_transform_data["inset"], duration)
-
+	if question_ui.visible: 
+		question_ui.visible = not question_ui.visible
+		is_player = false
 	# flip: scale.x collapses to 0 then expands to target scale.x, texture swaps at the midpoint
 	tween.tween_property(self, "scale:y", 0.0, flip_point).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	tween.chain().tween_callback(func(): texture = load(card_texture_path))
 	tween.chain().tween_property(self, "scale:y", card_transform_data["scale"].y, duration - flip_point).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-
+	if is_player:
+		tween.chain().tween_callback(func(): question_ui.visible = not question_ui.visible)
 	# scale.x animates normally across the whole duration, independent of the flip's y collapse
 	tween.tween_property(self, "scale:x", card_transform_data["scale"].x, duration)
 	await tween.finished

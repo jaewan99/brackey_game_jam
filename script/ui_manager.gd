@@ -11,10 +11,10 @@ enum UIState {NONE, MAIN_MENU, PAUSE_MENU, SETTINGS, DEAL, TELL, QUESTIONMARK, C
 var current_state: UIState
 
 # Chips
-@onready var chips_ui: Control = $CoinsUI
-@onready var player_coin: Node2D= $CoinsUI/PlayerChips
-@onready var opponent_coin: Node2D = $CoinsUI/OpponentChips
-@onready var pot_coin: Node2D = $CoinsUI/PotsChips
+@onready var chips_ui: Control = %CoinsUI
+@onready var player_coin: Node2D= %CoinsUI/PlayerChips
+@onready var opponent_coin: Node2D = %CoinsUI/OpponentChips
+@onready var pot_coin: Node2D = %CoinsUI/PotsChips
 
 # Deal Phase
 @onready var check: Label = $DealUI/CHECK
@@ -45,8 +45,8 @@ func set_visible_custom(state: UIState) -> void:
 	match state:
 		UIState.CHIPS:
 			chips_ui.visible = true
-		UIState.QUESTIONMARK:
-			question_ui.visible = true
+		#UIState.QUESTIONMARK:
+			#question_ui.visible = true
 		
 func update_chip_visuals(player_chips: Variant = null, opponent_chips: Variant = null, pot: Variant = null) -> void:
 	if player_chips != null:

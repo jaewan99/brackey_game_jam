@@ -31,6 +31,9 @@ var card_player_point :Vector2
 var card_opponent_point :Vector2
 var card_opponent_reveal_point :Vector2
 
+var _folded_seat = null
+var _checks_in_row := 0
+
 func _ready() -> void:
 	card_spawn_point = marker.get_node("CardSpawnMark").global_position
 	card_player_point = marker.get_node("CardPlayerMark").global_position
@@ -84,8 +87,8 @@ func _draw_phase() -> void:
 	opponent_card_number = deck.draw_card()
 	
 	# create card
-	player_card = deck.spawn_card_at_marker(card_spawn_point, player_card_number)
-	opponent_card = deck.spawn_card_at_marker(card_spawn_point, opponent_card_number)
+	player_card = deck.spawn_card_at_marker(card_spawn_point, player_card_number, true)
+	opponent_card = deck.spawn_card_at_marker(card_spawn_point, opponent_card_number, false)
 	
 	# move cards in front of the players
 	await player_card.send_card_to(card_player_point, player_card.TransformPreset.PLAYER)
@@ -114,7 +117,6 @@ func _opponent_tell() -> void:
 func _finish_tell_phase() -> void:
 	ui.set_state(ui.UIState.NONE)
 	await player_card.reveal_to_forehead(card_player_point, player_card.TransformPreset.PLAYERREVEAL,deck.get_card_texture_path(opponent_tell))
-	ui.set_visible_custom(ui.UIState.QUESTIONMARK)
 	_start_deal_phase()
 
 #--------------------------------------deal phase
@@ -122,40 +124,42 @@ func _start_deal_phase() -> void:
 	ui.set_state(ui.UIState.DEAL)
 	current_turn = Turn.PLAYER
 	to_call = 0
-	# here the hands stacks up (player-ai-player-ai-...)
-	await _player_turn()
+	_folded_seat = null
+	_checks_in_row = 0
+	await _betting_phase()
 	_open_phase()
-	
-var _folded_seat = null
+
+func _betting_phase() -> void:
+	var seat := Turn.PLAYER
+	while true:
+		ui.update_action_visibility(seat == Turn.PLAYER, to_call)
+		var ctrl = player_controller if seat == Turn.PLAYER else opponent_controller
+		var action = await ctrl.request_action(_build_view(seat))
+		apply_action(seat, action)
+		if _bet_over(action):
+			break
+		seat = Turn.OPPONENT if seat == Turn.PLAYER else Turn.PLAYER
+		
 func apply_action(seat: Turn, action: Action.Type) -> void:
 	var is_player := seat == Turn.PLAYER
 	match action:
 		Action.Type.FOLD:
 			_folded_seat = seat
 		Action.Type.CHECK:
-			pass
+			_checks_in_row += 1
 		Action.Type.CALL:
 			_commit(is_player, to_call)
 			to_call = 0
 		Action.Type.RAISE:
 			_commit(is_player, to_call + BET_UNIT)
 			to_call = BET_UNIT
+			_checks_in_row = 0
 		Action.Type.ALLIN:
 			var stack := player_chips if is_player else opponent_chips
 			_commit(is_player, stack)
 			to_call = maxi(0, stack - to_call)
+			_checks_in_row = 0
 	ui.update_chip_visuals(player_chips,opponent_chips,pot)
-
-func _player_turn() -> void:
-	ui.update_action_visibility(true, to_call)
-	var view := _build_view(Turn.PLAYER)
-	var action = await player_controller.request_action(view)
-	apply_action(Turn.PLAYER, action)
-	if _hand_over(action): return
-	current_turn = Turn.OPPONENT
-	ui.update_action_visibility(current_turn == Turn.PLAYER, to_call)
-	await ai_decision()
-
 
 func _commit(is_player: bool, amount:int) -> void:
 	if is_player:
@@ -214,16 +218,8 @@ func _next_round() -> void:
 		print("Game over")            # TODO: real end-game / results screen
 		return
 	set_round()   # ante + draw + tell + deal again; pot persists so carryover work
-#------------------------------------------------- ai / opponent
-func ai_decision()-> void:
-	var action: Action.Type = await opponent_controller.request_action(_build_view(Turn.OPPONENT))
-	apply_action(Turn.OPPONENT, action)
-	print(action)
-	current_turn = Turn.PLAYER
-	ui.update_action_visibility(current_turn == Turn.PLAYER, to_call)
-	if _hand_over(action): return
-	await _player_turn()
-	
+
+# --- aux
 	
 # -- only what a seat is allowed to know (this is your serialization boundary) ---
 func _build_view(seat: Turn) -> Dictionary:
@@ -237,8 +233,10 @@ func _build_view(seat: Turn) -> Dictionary:
 		"player_aggression": 0.0,   # TODO: derive from betting history
 		"bet_unit": BET_UNIT,
 	}
-# --- aux
-# TODO - do the CHECK CHECK ending
-func _hand_over(action: Action.Type) -> bool:
-	# round ends on FOLD, CALL, or LIAR; RAISE/CHECK keep it going
-	return action in [Action.Type.FOLD, Action.Type.CALL, Action.Type.LIAR]
+func _bet_over(action: Action.Type) -> bool:
+	match action:
+		Action.Type.FOLD, Action.Type.CALL, Action.Type.LIAR:
+			return true
+		Action.Type.CHECK:
+			return _checks_in_row >= 2
+	return false

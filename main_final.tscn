@@ -14,7 +14,6 @@
 [ext_resource type="Script" uid="uid://dakwh74w1b2v0" path="res://script/ui_manager.gd" id="11_jht16"]
 [ext_resource type="PackedScene" uid="uid://bjhxkrvyuqk6r" path="res://card/card.tscn" id="11_uclpb"]
 [ext_resource type="Texture2D" uid="uid://d2bq54ppbtu7d" path="res://card/cards/2_of_clubs.png" id="13_0opuu"]
-[ext_resource type="FontFile" uid="uid://ypaao7bra87o" path="res://art/fontstyle/EBGaramond/EBGaramond12-Italic.ttf" id="13_x3qnp"]
 [ext_resource type="PackedScene" uid="uid://ddamdm11qakt" path="res://chips/chips.tscn" id="14_87ufc"]
 [ext_resource type="Texture2D" uid="uid://bijkovjhaoe1t" path="res://card/card_back_red.png" id="14_uclpb"]
 [ext_resource type="Texture2D" uid="uid://b5gsqgwrbul8l" path="res://card/cards/2_of_spades.png" id="16_jht16"]
@@ -110,58 +109,80 @@ texture = ExtResource("5_0opuu")
 position = Vector2(960, 419)
 texture = ExtResource("6_uclpb")
 
-[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=888000010]
-color = Color(0, 0, 0, 1)
-
-[node name="PointLight2D" type="PointLight2D" parent="." unique_id=397553667]
-position = Vector2(960.00006, -44)
-scale = Vector2(2.524, 3.1)
-texture = ExtResource("7_m10kg")
-
-[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=85898494]
-position = Vector2(998, 268)
-emitting = false
-amount = 40
-texture = ExtResource("8_jht16")
-lifetime = 9999.0
-one_shot = true
-explosiveness = 1.0
-randomness = 1.0
-process_material = SubResource("ParticleProcessMaterial_oroq7")
-
-[node name="UI" type="CanvasLayer" parent="." unique_id=1533912204]
-unique_name_in_owner = true
-layer = 150
-script = ExtResource("11_jht16")
-
-[node name="MainMenuUI" type="Control" parent="UI" unique_id=432341710]
+[node name="AffectedUI" type="Control" parent="." unique_id=442462557]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
+
+[node name="CoinsUI" type="Control" parent="AffectedUI" unique_id=1676000164]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 0
+offset_right = 39.999878
+offset_bottom = 40.0
+
+[node name="PlayerChips" parent="AffectedUI/CoinsUI" unique_id=1729713730 instance=ExtResource("14_87ufc")]
+position = Vector2(521, 887)
+
+[node name="PotsChips" parent="AffectedUI/CoinsUI" unique_id=1479083224 instance=ExtResource("14_87ufc")]
+position = Vector2(960, 702)
+scale = Vector2(0.95, 0.95)
+
+[node name="OpponentChips" parent="AffectedUI/CoinsUI" unique_id=27132752 instance=ExtResource("14_87ufc")]
+position = Vector2(724, 578)
+scale = Vector2(0.9, 0.9)
+
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=888000010]
+color = Color(0, 0, 0, 1)
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1533912204]
+unique_name_in_owner = true
+layer = 100
+script = ExtResource("11_jht16")
+
+[node name="MainMenuUI" type="Control" parent="UI" unique_id=432341710]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_top = 2.0
+offset_right = 40.0
+offset_bottom = 42.0
 
 [node name="Settings" parent="UI/MainMenuUI" unique_id=1191972217 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 1349.0
-offset_top = 309.00003
-offset_right = 1902.0
-offset_bottom = 438.00003
-rotation = 0.40142572
+offset_left = 1229.0
+offset_top = 335.20193
+offset_right = 1782.0
+offset_bottom = 464.20193
+theme_override_font_sizes/font_size = 84
 text = "SETTING"
+
+[node name="HOWTOPLAY" parent="UI/MainMenuUI" unique_id=1628428724 instance=ExtResource("9_x3qnp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 1229.0
+offset_top = 456.0
+offset_right = 1782.0
+offset_bottom = 585.0
+theme_override_font_sizes/font_size = 84
+text = "HOW TO PLAY"
 
 [node name="Start" parent="UI/MainMenuUI" unique_id=1663608405 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 1435.0
-offset_top = 118.000015
-offset_right = 1822.0
-offset_bottom = 247.00002
-rotation = 0.40142572
+offset_left = 1315.0
+offset_top = 196.0
+offset_right = 1702.0
+offset_bottom = 325.0
+theme_override_font_sizes/font_size = 84
 text = "START"
 
 [node name="PauseMenuUI" type="Control" parent="UI" unique_id=1890518175]
@@ -189,11 +210,12 @@ layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 355.0
-offset_top = 144.0
-offset_right = 683.0
-offset_bottom = 273.0
-rotation = 0.30194196
+offset_left = 448.00006
+offset_top = 83.0
+offset_right = 776.00006
+offset_bottom = 212.0
+rotation = 0.17453292
+theme_override_font_sizes/font_size = 84
 text = "CHECK"
 
 [node name="RAISE" parent="UI/DealUI" unique_id=810211377 instance=ExtResource("9_x3qnp")]
@@ -201,11 +223,12 @@ layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 345.99997
-offset_top = 285.99997
-offset_right = 702.0
-offset_bottom = 414.99997
-rotation = 0.30543262
+offset_left = 422.40414
+offset_top = 227.99997
+offset_right = 778.4042
+offset_bottom = 356.99997
+rotation = 0.20071286
+theme_override_font_sizes/font_size = 84
 text = "RAISE"
 
 [node name="CALL" parent="UI/DealUI" unique_id=982994333 instance=ExtResource("9_x3qnp")]
@@ -213,23 +236,25 @@ layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 378.00003
-offset_top = 136.0
-offset_right = 706.0
-offset_bottom = 265.0
-rotation = 0.40142572
+offset_left = 454.4042
+offset_top = 78.0
+offset_right = 782.4042
+offset_bottom = 207.0
+rotation = 0.17453292
+theme_override_font_sizes/font_size = 84
 text = "CALL"
 
-[node name="FOLD" parent="UI/DealUI" unique_id=1628428724 instance=ExtResource("9_x3qnp")]
+[node name="FOLD" parent="UI/DealUI" unique_id=2030436001 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 352.00012
-offset_top = 424.00003
-offset_right = 686.0001
-offset_bottom = 553.0
-rotation = 0.40142572
+offset_left = 428.4043
+offset_top = 366.00003
+offset_right = 762.4043
+offset_bottom = 495.0
+rotation = 0.20943952
+theme_override_font_sizes/font_size = 84
 text = "FOLD"
 
 [node name="ALLIN" parent="UI/DealUI" unique_id=1193314453 instance=ExtResource("9_x3qnp")]
@@ -237,11 +262,12 @@ layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 1193.0001
-offset_top = 180.00003
-offset_right = 1527.0001
-offset_bottom = 309.00003
-rotation = 0.40142572
+offset_left = 1174.0
+offset_top = 154.99849
+offset_right = 1508.0
+offset_bottom = 283.99847
+rotation = -0.17453292
+theme_override_font_sizes/font_size = 84
 text = "ALL IN"
 
 [node name="LIAR" parent="UI/DealUI" unique_id=1112492398 instance=ExtResource("9_x3qnp")]
@@ -249,11 +275,12 @@ layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 1168.0001
-offset_top = 348.00006
-offset_right = 1496.0001
-offset_bottom = 477.00006
-rotation = 0.40142572
+offset_left = 1204.9996
+offset_top = 290.9985
+offset_right = 1532.9996
+offset_bottom = 419.9985
+rotation = -0.20071286
+theme_override_font_sizes/font_size = 84
 text = "LIAR"
 
 [node name="TruthLieUI" type="Control" parent="UI" unique_id=1898903494]
@@ -297,50 +324,21 @@ offset_right = 1464.0
 offset_bottom = 390.0
 text = "LIE"
 
-[node name="QuestionMarkUI" type="Control" parent="UI" unique_id=1151306578]
-visible = false
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=397553667]
+position = Vector2(960.00006, -44)
+scale = Vector2(2.524, 3.1)
+texture = ExtResource("7_m10kg")
 
-[node name="Label" type="Label" parent="UI/QuestionMarkUI" unique_id=411922202]
-layout_mode = 0
-offset_left = 1055.0001
-offset_top = 873.00006
-offset_right = 1095.0001
-offset_bottom = 1002.00006
-rotation = 0.07853982
-theme_override_fonts/font = ExtResource("13_x3qnp")
-theme_override_font_sizes/font_size = 128
-text = "?"
-
-[node name="Label2" type="Label" parent="UI/QuestionMarkUI" unique_id=689243308]
-layout_mode = 0
-offset_left = 804.00006
-offset_top = 774.0
-offset_right = 844.00006
-offset_bottom = 903.0
-rotation = -0.37524578
-theme_override_fonts/font = ExtResource("13_x3qnp")
-theme_override_font_sizes/font_size = 128
-text = "?"
-
-[node name="CoinsUI" type="Control" parent="UI" unique_id=1676000164]
-visible = false
-layout_mode = 3
-anchors_preset = 0
-offset_right = 39.999878
-offset_bottom = 40.0
-
-[node name="PlayerChips" parent="UI/CoinsUI" unique_id=1729713730 instance=ExtResource("14_87ufc")]
-position = Vector2(350, 925)
-
-[node name="PotsChips" parent="UI/CoinsUI" unique_id=1479083224 instance=ExtResource("14_87ufc")]
-position = Vector2(895, 702)
-
-[node name="OpponentChips" parent="UI/CoinsUI" unique_id=27132752 instance=ExtResource("14_87ufc")]
-position = Vector2(450, 600)
+[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=85898494]
+position = Vector2(998, 268)
+emitting = false
+amount = 40
+texture = ExtResource("8_jht16")
+lifetime = 9999.0
+one_shot = true
+explosiveness = 1.0
+randomness = 1.0
+process_material = SubResource("ParticleProcessMaterial_oroq7")
 
 [node name="PlayerCard" parent="." unique_id=1589171735 instance=ExtResource("11_uclpb")]
 visible = false
@@ -426,5 +424,5 @@ position = Vector2(521, 925)
 
 [node name="Coins" type="Sprite2D" parent="." unique_id=762059090]
 visible = false
-position = Vector2(521, 925)
+position = Vector2(574, 829)
 texture = ExtResource("18_idb0s")

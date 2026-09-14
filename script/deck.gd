@@ -37,8 +37,10 @@ func get_card_texture_path(card_id:int) -> String:
 	var suit: String = get_suit(card_id)
 	return "res://card/cards/%s_of_%s.png" % [rank_name, suit]
 	
-func spawn_card_at_marker(spawn_point: Vector2, _card_id:int) -> Sprite2D:
+func spawn_card_at_marker(spawn_point: Vector2, _card_id:int, is_player: bool) -> Sprite2D:
 	var card_instance = card_scene.instantiate()
+	if is_player: card_instance.is_player = true
+	else: card_instance.is_player = false
 	cards_container.add_child(card_instance)
 	card_instance.global_position = spawn_point
 	return card_instance
