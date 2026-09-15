@@ -7,7 +7,6 @@ enum UIState {NONE, MAIN_MENU, PAUSE_MENU, SETTINGS, DEAL, TELL, QUESTIONMARK, C
 @onready var settings: Control = $SettingMenuUI
 @onready var deal_ui: Control = $DealUI
 @onready var tell_ui: Control = $TruthLieUI
-@onready var question_ui: Control = $QuestionMarkUI
 var current_state: UIState
 
 # Chips
@@ -45,8 +44,6 @@ func set_visible_custom(state: UIState) -> void:
 	match state:
 		UIState.CHIPS:
 			chips_ui.visible = true
-		#UIState.QUESTIONMARK:
-			#question_ui.visible = true
 		
 func update_chip_visuals(player_chips: Variant = null, opponent_chips: Variant = null, pot: Variant = null) -> void:
 	if player_chips != null:
@@ -56,19 +53,25 @@ func update_chip_visuals(player_chips: Variant = null, opponent_chips: Variant =
 	if pot != null:
 		pot_coin.set_amount(pot)
 
-func update_action_visibility(is_player_turn: bool, to_call: int) -> void:
+# TODO fix this since there are edge cases
+func update_action_visibility(is_player_turn: bool, to_call: int, player_chips: int, opponent_chips: int, bet_unit: int = 3) -> void:
 	if not is_player_turn:
-		check.visible = false
-		raise.visible = false
-		call.visible = false
-		fold.visible = false
-		allin.visible = false
-		liar.visible = false
+		_hide_all_actions()
 		return
 	var facing := to_call > 0
-	check.visible = not facing
-	raise.visible = true
-	call.visible = facing
-	fold.visible = true
-	allin.visible = true
+	var can_act := player_chips > 0
+	var opp_live := opponent_chips > 0
+	var can_call := facing and player_chips >= to_call
+	var full_raise := player_chips >= to_call + bet_unit
+	var raise_ok := full_raise and opponent_chips > 0
+	
+	check.visible = can_act and not facing
+	call.visible = can_act and can_call
+	raise.visible = can_act and raise_ok and opp_live
+	allin.visible = can_act and opp_live
+	fold.visible = true # can always fold
 	liar.visible = true
+
+func _hide_all_actions():
+	for lbl in [check, raise, call, fold, allin, liar]:
+		lbl.visible = false

@@ -32,6 +32,7 @@ var card_opponent_point :Vector2
 var card_opponent_reveal_point :Vector2
 
 var _folded_seat = null
+var _liar_seat = null
 var _checks_in_row := 0
 
 func _ready() -> void:
@@ -125,6 +126,7 @@ func _start_deal_phase() -> void:
 	current_turn = Turn.PLAYER
 	to_call = 0
 	_folded_seat = null
+	_liar_seat = null
 	_checks_in_row = 0
 	await _betting_phase()
 	_open_phase()
@@ -132,7 +134,7 @@ func _start_deal_phase() -> void:
 func _betting_phase() -> void:
 	var seat := Turn.PLAYER
 	while true:
-		ui.update_action_visibility(seat == Turn.PLAYER, to_call)
+		ui.update_action_visibility(true, to_call, player_chips, opponent_chips, BET_UNIT)
 		var ctrl = player_controller if seat == Turn.PLAYER else opponent_controller
 		var action = await ctrl.request_action(_build_view(seat))
 		apply_action(seat, action)
@@ -159,6 +161,8 @@ func apply_action(seat: Turn, action: Action.Type) -> void:
 			_commit(is_player, stack)
 			to_call = maxi(0, stack - to_call)
 			_checks_in_row = 0
+		Action.Type.LIAR:
+			_liar_seat = seat
 	ui.update_chip_visuals(player_chips,opponent_chips,pot)
 
 func _commit(is_player: bool, amount:int) -> void:
@@ -192,6 +196,10 @@ func _open_phase() -> void:
 
 # returns Turn.PLAYER / Turn.OPPONENT, or null on a tie (carry pot)
 func _resolve_winner():
+	# LIAR call
+	if _liar_seat != null:
+		var accused = Turn.OPPONENT if _liar_seat == Turn.PLAYER else Turn.PLAYER
+		return _liar_seat if _seat_lied(accused) else accused
 	# a fold ends the hand with no showdown
 	if _folded_seat == Turn.PLAYER:
 		return Turn.OPPONENT
@@ -200,7 +208,7 @@ func _resolve_winner():
 	# showdown: compare ranks only (suits don't break ties)
 	var p_rank :int = deck.get_rank(player_card_number)
 	var o_rank :int = deck.get_rank(opponent_card_number)
-	print("resolve",p_rank, o_rank)
+	#print("resolve",p_rank, o_rank)
 	if p_rank > o_rank:
 		return Turn.PLAYER
 	if o_rank > p_rank:
@@ -240,3 +248,9 @@ func _bet_over(action: Action.Type) -> bool:
 		Action.Type.CHECK:
 			return _checks_in_row >= 2
 	return false
+
+func _seat_lied(teller: Turn) -> bool:
+	if teller == Turn.PLAYER:
+		return player_tell != opponent_card_number
+	else:
+		return opponent_tell != player_card_number

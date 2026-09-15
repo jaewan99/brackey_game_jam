@@ -7,6 +7,6 @@ extends Node2D
 
 @onready var count_label: Label = $CoinCount
 
-
+# TODO flourish this since having just one coin fills empty
 func set_amount(amount: int) -> void:
 	count_label.text = str(amount)
