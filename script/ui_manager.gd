@@ -2,6 +2,7 @@ extends CanvasLayer
 
 enum UIState {NONE, MAIN_MENU, PAUSE_MENU, SETTINGS, DEAL, TELL, QUESTIONMARK, CHIPS}
 
+
 @onready var main_menu: Control = $MainMenuUI
 @onready var pause_menu: Control = $PauseMenuUI
 @onready var settings: Control = $SettingMenuUI
@@ -11,9 +12,9 @@ var current_state: UIState
 
 # Chips
 @onready var chips_ui: Control = %CoinsUI
-@onready var player_coin: Node2D= %CoinsUI/PlayerChips
-@onready var opponent_coin: Node2D = %CoinsUI/OpponentChips
-@onready var pot_coin: Node2D = %CoinsUI/PotsChips
+@onready var player_coin: Node2D= %PlayerChips
+@onready var opponent_coin: Node2D = %OpponentChips
+@onready var pot_coin: Node2D = %PotsChips
 
 # Deal Phase
 @onready var check: Label = $DealUI/CHECK
@@ -34,24 +35,15 @@ func set_state(state: UIState) -> void:
 	deal_ui.visible = (state == UIState.DEAL)
 	tell_ui.visible = (state == UIState.TELL)
 
-func distribute_starting_chips(player: String, starting_chips) -> void:
-	if player == "PLAYER":
-		player_coin.set_amount(starting_chips)
-	else:
-		opponent_coin.set_amount(starting_chips)
+func send_chips(from:Node2D, to:Node2D, amount:int) -> void:
+	await from.fly_to(to.global_position, amount)
+	to.add_amount(amount)
 
 func set_visible_custom(state: UIState) -> void:
 	match state:
 		UIState.CHIPS:
 			chips_ui.visible = true
 		
-func update_chip_visuals(player_chips: Variant = null, opponent_chips: Variant = null, pot: Variant = null) -> void:
-	if player_chips != null:
-		player_coin.set_amount(player_chips)
-	if opponent_chips != null:
-		opponent_coin.set_amount(opponent_chips)
-	if pot != null:
-		pot_coin.set_amount(pot)
 
 # TODO fix this since there are edge cases
 func update_action_visibility(is_player_turn: bool, to_call: int, player_chips: int, opponent_chips: int, bet_unit: int = 3) -> void:

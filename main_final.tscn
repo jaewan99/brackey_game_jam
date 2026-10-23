@@ -10,32 +10,18 @@
 [ext_resource type="Texture2D" uid="uid://b6gutn7f6jm8f" path="res://art/shader/shadow_2.png" id="7_m10kg"]
 [ext_resource type="Texture2D" uid="uid://dclk0e3axinb2" path="res://art/dust.png" id="8_jht16"]
 [ext_resource type="PackedScene" uid="uid://ckevvqih58ul4" path="res://text/text.tscn" id="9_x3qnp"]
-[ext_resource type="Shader" uid="uid://ba60jlmxluoai" path="res://card/perspective.gdshader" id="11_0opuu"]
+[ext_resource type="Shader" uid="uid://ba60jlmxluoai" path="res://card/shaders/perspective.gdshader" id="11_0opuu"]
 [ext_resource type="Script" uid="uid://dakwh74w1b2v0" path="res://script/ui_manager.gd" id="11_jht16"]
 [ext_resource type="PackedScene" uid="uid://bjhxkrvyuqk6r" path="res://card/card.tscn" id="11_uclpb"]
 [ext_resource type="Texture2D" uid="uid://d2bq54ppbtu7d" path="res://card/cards/2_of_clubs.png" id="13_0opuu"]
 [ext_resource type="PackedScene" uid="uid://ddamdm11qakt" path="res://chips/chips.tscn" id="14_87ufc"]
 [ext_resource type="Texture2D" uid="uid://bijkovjhaoe1t" path="res://card/card_back_red.png" id="14_uclpb"]
 [ext_resource type="Texture2D" uid="uid://b5gsqgwrbul8l" path="res://card/cards/2_of_spades.png" id="16_jht16"]
-[ext_resource type="Texture2D" uid="uid://c03l2xr0vblp7" path="res://art/coins.tres" id="18_idb0s"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dgrrk"]
 shader = ExtResource("2_vgf7k")
 shader_parameter/color_levels = 9
 shader_parameter/posterize_strength = 1.0
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_oroq7"]
-particle_flag_disable_z = true
-emission_shape_scale = Vector3(75, 30, 0)
-emission_shape = 3
-emission_box_extents = Vector3(10, 10, 10)
-initial_velocity_min = 2.0
-initial_velocity_max = 8.0
-angular_velocity_min = 0.9999839
-angular_velocity_max = 2.9999838
-gravity = Vector3(0, 2, 0)
-scale_min = 0.5
-turbulence_enabled = true
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_m10kg"]
 shader = ExtResource("11_0opuu")
@@ -93,19 +79,23 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="Floor" type="Sprite2D" parent="." unique_id=1839986254]
+z_index = -127
 position = Vector2(960, 540)
 texture = ExtResource("3_5ucsj")
 
 [node name="WallReal" type="Sprite2D" parent="." unique_id=1461109278]
+z_index = -127
 position = Vector2(960, 540)
 texture = ExtResource("4_efk6m")
 
 [node name="TableFinal" type="Sprite2D" parent="." unique_id=249701963]
+z_index = -127
 position = Vector2(1069, 398.00003)
 scale = Vector2(0.9458333, 0.6800003)
 texture = ExtResource("5_0opuu")
 
 [node name="ChairWood" type="Sprite2D" parent="." unique_id=1351924544]
+z_index = -127
 position = Vector2(960, 419)
 texture = ExtResource("6_uclpb")
 
@@ -122,16 +112,21 @@ anchors_preset = 0
 offset_right = 39.999878
 offset_bottom = 40.0
 
-[node name="PlayerChips" parent="AffectedUI/CoinsUI" unique_id=1729713730 instance=ExtResource("14_87ufc")]
-position = Vector2(521, 887)
+[node name="OpponentChips" parent="AffectedUI/CoinsUI" unique_id=27132752 instance=ExtResource("14_87ufc")]
+unique_name_in_owner = true
+position = Vector2(724, 578)
+scale = Vector2(0.9, 0.9)
+stack_z_index = -1
 
 [node name="PotsChips" parent="AffectedUI/CoinsUI" unique_id=1479083224 instance=ExtResource("14_87ufc")]
+unique_name_in_owner = true
 position = Vector2(960, 702)
 scale = Vector2(0.95, 0.95)
 
-[node name="OpponentChips" parent="AffectedUI/CoinsUI" unique_id=27132752 instance=ExtResource("14_87ufc")]
-position = Vector2(724, 578)
-scale = Vector2(0.9, 0.9)
+[node name="PlayerChips" parent="AffectedUI/CoinsUI" unique_id=1729713730 instance=ExtResource("14_87ufc")]
+unique_name_in_owner = true
+position = Vector2(521, 887)
+stack_z_index = 1
 
 [node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=888000010]
 color = Color(0, 0, 0, 1)
@@ -301,6 +296,7 @@ offset_right = 1270.0
 offset_bottom = 203.0
 theme_override_font_sizes/font_size = 64
 text = "Tell them what you see"
+is_hoverable = false
 
 [node name="Truth" parent="UI/TruthLieUI" unique_id=707509783 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
@@ -329,16 +325,23 @@ position = Vector2(960.00006, -44)
 scale = Vector2(2.524, 3.1)
 texture = ExtResource("7_m10kg")
 
-[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=85898494]
+[node name="CPUParticles2D" type="CPUParticles2D" parent="." unique_id=2029339743]
 position = Vector2(998, 268)
-emitting = false
 amount = 40
 texture = ExtResource("8_jht16")
-lifetime = 9999.0
-one_shot = true
+lifetime = 100.0
 explosiveness = 1.0
 randomness = 1.0
-process_material = SubResource("ParticleProcessMaterial_oroq7")
+fixed_fps = 30
+draw_order = 1
+emission_shape = 3
+emission_rect_extents = Vector2(750, 300)
+gravity = Vector2(0, 0)
+initial_velocity_min = 2.0
+initial_velocity_max = 8.0
+angular_velocity_min = 0.9999839
+angular_velocity_max = 2.9999838
+scale_amount_min = 0.5
 
 [node name="PlayerCard" parent="." unique_id=1589171735 instance=ExtResource("11_uclpb")]
 visible = false
@@ -418,11 +421,3 @@ scale = Vector2(0.195, 0.26)
 position = Vector2(960, 334)
 rotation = 1.5707964
 scale = Vector2(0.195, 0.26)
-
-[node name="CoinPlayerMark" type="Marker2D" parent="Marker" unique_id=1431024912]
-position = Vector2(521, 925)
-
-[node name="Coins" type="Sprite2D" parent="." unique_id=762059090]
-visible = false
-position = Vector2(574, 829)
-texture = ExtResource("18_idb0s")

@@ -6,6 +6,8 @@ extends Sprite2D
 enum TransformPreset { START, PLAYER, OPPONENT, PLAYERREVEAL, OPPONENTREVEAL}
 @onready var question_ui: Control = $QuestionMarkUI
 
+const BURN_SHADER := preload("res://card/shaders/card_burn.gdshader")
+
 const TRANSFORM_PRESETS := {
 	TransformPreset.START: {
 		"scale": Vector2(0.195, 0.26),
@@ -104,3 +106,28 @@ func _set_y_rot(value: float) -> void:
 
 func _set_inset(value: float) -> void:
 	material.set_shader_parameter("inset", value)
+
+func burn(duration: float = 0.9) -> void:
+	var noise := FastNoiseLite.new()
+	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH   # author's recommendation
+	var noise_tex := NoiseTexture2D.new()
+	noise_tex.noise = noise
+	noise_tex.seamless = true
+
+	var mat := ShaderMaterial.new()
+	mat.shader = BURN_SHADER
+	mat.set_shader_parameter("dissolve_texture", noise_tex)
+	mat.set_shader_parameter("dissolve_value", 1.0)        # 1 = intact
+	mat.set_shader_parameter("burn_size", 0.05)
+	mat.set_shader_parameter("burn_color", Color(1.0, 0.45, 0.05))
+
+	if question_ui.visible:
+		question_ui.visible = false
+	material = mat
+
+	var tween := create_tween()
+	tween.tween_method(
+		func(v: float): mat.set_shader_parameter("dissolve_value", v),
+		1.0, 0.0, duration)                                # 1 → 0 dissolves away
+	await tween.finished
+	queue_free()

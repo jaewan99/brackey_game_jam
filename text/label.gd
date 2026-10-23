@@ -3,6 +3,7 @@ extends Label
 @export var bob_amplitude: float = 4.0
 @export var bob_speed: float = 4.0
 @onready var mat: ShaderMaterial = material
+@export var is_hoverable: bool = true
 
 var game_manager: Node
 
@@ -25,10 +26,13 @@ func _process(_delta: float) -> void:
 	else:
 		position.y = base_y
 	
+
 func _on_mouse_entered() -> void:
+	if not is_hoverable:
+		return
 	is_hovering = true
 	var tween = create_tween()
-	tween.tween_method(_set_highlight, mat.get_shader_parameter("highlight_strength"),0.7,0.15)
+	tween.tween_method(_set_highlight, mat.get_shader_parameter("highlight_strength"), 0.7, 0.15)
 
 func _on_mouse_exited() -> void:
 	is_hovering = false

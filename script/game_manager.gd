@@ -62,25 +62,28 @@ func start_game() -> void:
 func _distribute_starting_chips() -> void:
 	ui.set_visible_custom(ui.UIState.CHIPS)
 	player_chips = START_CHIPS
-	ui.distribute_starting_chips("PLAYER",player_chips)
+	ui.player_coin.set_amount(player_chips)
 	opponent_chips = START_CHIPS
-	ui.distribute_starting_chips("OPPONENT", opponent_chips)
+	ui.opponent_coin.set_amount(opponent_chips)
+	ui.pot_coin.set_amount(0)
 
 func set_round() -> void:
 	# choose opponent
 	# set the index for the round
-	await _ante_phase()
+	_ante_phase()
 	await _draw_phase()
 	await _open_tell_phase()
 
+var player_ante
+var opponent_ante
+
 func _ante_phase() -> void:
-	var player_ante = min(player_chips, ANTE)
-	var opponent_ante = min(opponent_chips, ANTE)
+	player_ante = min(player_chips, ANTE)
+	opponent_ante = min(opponent_chips, ANTE)
 	player_chips -= player_ante
 	opponent_chips -= opponent_ante
 	pot += player_ante + opponent_ante
-	ui.update_chip_visuals(player_chips, opponent_chips, pot)
-	
+
 
 func _draw_phase() -> void:
 	# get a card(int) from the deck
@@ -98,7 +101,10 @@ func _draw_phase() -> void:
 	# reveal the cards in their foreheads
 	await player_card.send_card_to(card_player_point, player_card.TransformPreset.PLAYERREVEAL)
 	await opponent_card.reveal_to_forehead(card_opponent_reveal_point, player_card.TransformPreset.OPPONENTREVEAL,deck.get_card_texture_path(opponent_card_number))
-
+	
+	# players pay for the start bet coins
+	await ui.send_chips(ui.player_coin, ui.pot_coin, player_ante)
+	await ui.send_chips(ui.opponent_coin, ui.pot_coin, opponent_ante)
 # -------------------------- tell phase -----------------------------------------
 func _open_tell_phase() -> void:
 	ui.set_state(ui.UIState.TELL)
@@ -137,7 +143,7 @@ func _betting_phase() -> void:
 		ui.update_action_visibility(true, to_call, player_chips, opponent_chips, BET_UNIT)
 		var ctrl = player_controller if seat == Turn.PLAYER else opponent_controller
 		var action = await ctrl.request_action(_build_view(seat))
-		apply_action(seat, action)
+		await apply_action(seat, action)
 		if _bet_over(action):
 			break
 		seat = Turn.OPPONENT if seat == Turn.PLAYER else Turn.PLAYER
@@ -150,27 +156,30 @@ func apply_action(seat: Turn, action: Action.Type) -> void:
 		Action.Type.CHECK:
 			_checks_in_row += 1
 		Action.Type.CALL:
-			_commit(is_player, to_call)
+			var moved := _commit(is_player, to_call)
+			await _send_to_pot(is_player, moved)
 			to_call = 0
 		Action.Type.RAISE:
-			_commit(is_player, to_call + BET_UNIT)
+			var moved := _commit(is_player, to_call + BET_UNIT)
+			await _send_to_pot(is_player, moved)
 			to_call = BET_UNIT
 			_checks_in_row = 0
 		Action.Type.ALLIN:
 			var stack := player_chips if is_player else opponent_chips
-			_commit(is_player, stack)
+			var moved := _commit(is_player, stack)
+			await _send_to_pot(is_player, moved)
 			to_call = maxi(0, stack - to_call)
 			_checks_in_row = 0
 		Action.Type.LIAR:
 			_liar_seat = seat
-	ui.update_chip_visuals(player_chips,opponent_chips,pot)
 
-func _commit(is_player: bool, amount:int) -> void:
+func _commit(is_player: bool, amount:int) -> int:
 	if is_player:
 		amount = mini(player_chips, amount); player_chips -= amount
 	else:
 		amount = mini(opponent_chips, amount); opponent_chips -= amount
 	pot += amount
+	return amount
 #------------------------------------------------- open phase
 func _open_phase() -> void:
 	ui.set_state(ui.UIState.NONE)
@@ -182,15 +191,17 @@ func _open_phase() -> void:
 	match _resolve_winner():
 		Turn.PLAYER:
 			player_chips += pot
+			await ui.send_chips(ui.pot_coin, ui.player_coin, pot)
 			pot = 0
 			print("player wins")
 		Turn.OPPONENT:
 			opponent_chips += pot
+			await ui.send_chips(ui.pot_coin, ui.opponent_coin, pot)
 			pot = 0
 			print("opponent wins")
 		_:
 			print("Draw")
-	ui.update_chip_visuals(player_chips, opponent_chips, pot)
+			
 	await _cleanup_round()
 	_next_round()
 
@@ -217,9 +228,10 @@ func _resolve_winner():
 
 func _cleanup_round() -> void:
 	if is_instance_valid(player_card):
-		player_card.queue_free()
+		await player_card.burn()
 	if is_instance_valid(opponent_card):
-		opponent_card.queue_free()
+		opponent_card.burn()
+	await get_tree().create_timer(0.6).timeout
 
 func _next_round() -> void:
 	if player_chips <= 0 or opponent_chips <= 0:
@@ -228,6 +240,11 @@ func _next_round() -> void:
 	set_round()   # ante + draw + tell + deal again; pot persists so carryover work
 
 # --- aux
+func _send_to_pot(is_player: bool, amount: int) -> void:
+	if amount <= 0:
+		return
+	var from = ui.player_coin if is_player else ui.opponent_coin
+	await ui.send_chips(from, ui.pot_coin, amount)
 	
 # -- only what a seat is allowed to know (this is your serialization boundary) ---
 func _build_view(seat: Turn) -> Dictionary:

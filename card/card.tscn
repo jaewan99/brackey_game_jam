@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bjhxkrvyuqk6r"]
 
 [ext_resource type="Texture2D" uid="uid://dxrrccsnjtac5" path="res://card/card_back_black.png" id="1_fjcud"]
-[ext_resource type="Shader" uid="uid://ba60jlmxluoai" path="res://card/perspective.gdshader" id="1_trrkg"]
+[ext_resource type="Shader" uid="uid://ba60jlmxluoai" path="res://card/shaders/perspective.gdshader" id="1_trrkg"]
 [ext_resource type="Script" uid="uid://dfn45mye4rqyc" path="res://card/card.gd" id="3_ply2h"]
 [ext_resource type="FontFile" uid="uid://ypaao7bra87o" path="res://art/fontstyle/EBGaramond/EBGaramond12-Italic.ttf" id="4_fdnr0"]
 
