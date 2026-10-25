@@ -22,6 +22,29 @@ func _ready() -> void:
 	base_y = position.y
 	game_manager = get_tree().current_scene
 	pressed.connect(_handle_input)
+	
+	for s in ["normal", "hover", "pressed", "focus", "disabled"]:
+		add_theme_stylebox_override(s, StyleBoxEmpty.new())
+
+	_mat = ShaderMaterial.new()
+	_mat.shader = shader
+	_mat.set_shader_parameter("base_color", base_color)
+	_mat.set_shader_parameter("accent_color", accent_color)
+	_mat.set_shader_parameter("edge_color", edge_color)
+	_mat.set_shader_parameter("corner_radius", corner_radius)
+	_mat.set_shader_parameter("border_width", border_width)
+
+	_bg = ColorRect.new()
+	_bg.material = _mat
+	_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE      # clicks pass through to the button
+	_bg.show_behind_parent = true                       # draw behind the button's text
+	_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(_bg)
+
+	resized.connect(_sync_size)
+	mouse_entered.connect(func(): _to_hover(1.0))
+	mouse_exited.connect(func(): _to_hover(0.0))
+	_sync_size()
 
 func _process(_delta: float) -> void:
 	if is_hovering:
@@ -73,3 +96,25 @@ func _handle_input() -> void:
 		"ALL IN":
 			await game_manager.player_controller.submit(Action.Type.ALLIN)
 	disabled = false
+
+
+@export var shader: Shader
+@export var base_color: Color = Color("171f2e")
+@export var accent_color: Color = Color("2e6bb8")
+@export var edge_color: Color = Color("99d9ff")
+@export_range(0.0, 0.5) var corner_radius: float = 0.22
+@export_range(0.0, 0.2) var border_width: float = 0.05
+
+var _bg: ColorRect
+var _mat: ShaderMaterial
+var _hover := 0.0
+
+func _sync_size() -> void:
+	_mat.set_shader_parameter("size", size)
+
+func _to_hover(target: float) -> void:
+	create_tween().tween_method(
+		func(v: float):
+			_hover = v
+			_mat.set_shader_parameter("hover", v),
+		_hover, target, 0.15)

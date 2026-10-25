@@ -1,8 +1,20 @@
 [gd_scene format=3 uid="uid://ckevvqih58ul4"]
 
 [ext_resource type="Shader" uid="uid://byhqiah5x6rj7" path="res://text/text.gdshader" id="1_7fjir"]
+[ext_resource type="Shader" uid="uid://dxt1sv48o5pre" path="res://text/button_shader.gdshader" id="1_pp1rp"]
 [ext_resource type="FontFile" uid="uid://c4lv6nd8vrnay" path="res://art/fontstyle/EBGaramond/EBGaramond12-Regular.ttf" id="1_yjsib"]
 [ext_resource type="Script" uid="uid://dmdoil5esvb2q" path="res://text/label.gd" id="2_7fjir"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_giq6a"]
+shader = ExtResource("1_pp1rp")
+shader_parameter/size = Vector2(120, 48)
+shader_parameter/base_color = Color(0.09, 0.12, 0.18, 1)
+shader_parameter/accent_color = Color(0.18, 0.42, 0.72, 1)
+shader_parameter/edge_color = Color(0.6, 0.85, 1, 1)
+shader_parameter/corner_radius = 0.22
+shader_parameter/border_width = 0.05
+shader_parameter/hover = 0.0
+shader_parameter/sheen_speed = 1.2
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_r1cwm"]
 shader = ExtResource("1_7fjir")
@@ -12,6 +24,7 @@ shader_parameter/highlight_tint = Color(1, 0.2, 0.15, 1)
 shader_parameter/highlight_strength = 0.0
 
 [node name="Label" type="Button" unique_id=439202351]
+material = SubResource("ShaderMaterial_giq6a")
 anchors_preset = -1
 anchor_right = 0.171
 anchor_bottom = 0.119
@@ -28,6 +41,7 @@ offset_right = 339.0
 offset_bottom = 138.0
 theme_override_fonts/font = ExtResource("1_yjsib")
 theme_override_font_sizes/font_size = 128
+text = "Hello"
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
