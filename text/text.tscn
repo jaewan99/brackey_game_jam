@@ -3,30 +3,31 @@
 [ext_resource type="Shader" uid="uid://byhqiah5x6rj7" path="res://text/text.gdshader" id="1_7fjir"]
 [ext_resource type="FontFile" uid="uid://c4lv6nd8vrnay" path="res://art/fontstyle/EBGaramond/EBGaramond12-Regular.ttf" id="1_yjsib"]
 [ext_resource type="Script" uid="uid://dmdoil5esvb2q" path="res://text/label.gd" id="2_7fjir"]
-[ext_resource type="Texture2D" uid="uid://b04p3vo1yd00c" path="res://text/rusty_metal_04_diff_1k.jpg" id="2_pp1rp"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_pp1rp"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r1cwm"]
 shader = ExtResource("1_7fjir")
-shader_parameter/rust_texture = ExtResource("2_pp1rp")
 shader_parameter/rust_tiling = 3.0
 shader_parameter/rust_amount = 0.7
 shader_parameter/highlight_tint = Color(1, 0.2, 0.15, 1)
 shader_parameter/highlight_strength = 0.0
 
-[node name="Label" type="Label" unique_id=1628428724]
-material = SubResource("ShaderMaterial_pp1rp")
+[node name="Label" type="Button" unique_id=439202351]
 anchors_preset = -1
 anchor_right = 0.171
 anchor_bottom = 0.119
-offset_right = -0.32000732
-offset_bottom = 0.47999573
-mouse_filter = 0
+offset_right = 7.6799927
+offset_bottom = 8.479996
 theme_override_fonts/font = ExtResource("1_yjsib")
 theme_override_font_sizes/font_size = 128
-text = "DEAL"
-horizontal_alignment = 1
-vertical_alignment = 1
 script = ExtResource("2_7fjir")
+
+[node name="Label" type="Label" parent="." unique_id=2025771783]
+material = SubResource("ShaderMaterial_r1cwm")
+layout_mode = 0
+offset_right = 339.0
+offset_bottom = 138.0
+theme_override_fonts/font = ExtResource("1_yjsib")
+theme_override_font_sizes/font_size = 128
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]

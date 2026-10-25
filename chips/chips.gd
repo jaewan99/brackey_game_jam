@@ -15,6 +15,7 @@ var _hovering := false
 func _ready() -> void:
 	_chips_root = Node2D.new()
 	add_child(_chips_root)
+	count_label.visible = false
 
 func _process(_delta: float) -> void:
 	# get_local_mouse_position() already undoes this node's scale/position,
@@ -121,3 +122,6 @@ func _position_label() -> void:
 	var sz := count_label.get_combined_minimum_size()   # the text's own size
 	count_label.size = sz
 	count_label.position = center - sz * 0.5            # top-left so its center lands on the stack center
+
+
+	

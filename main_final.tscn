@@ -17,6 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://ddamdm11qakt" path="res://chips/chips.tscn" id="14_87ufc"]
 [ext_resource type="Texture2D" uid="uid://bijkovjhaoe1t" path="res://card/card_back_red.png" id="14_uclpb"]
 [ext_resource type="Texture2D" uid="uid://b5gsqgwrbul8l" path="res://card/cards/2_of_spades.png" id="16_jht16"]
+[ext_resource type="PackedScene" uid="uid://blrmhvde07gbc" path="res://deck/deck.tscn" id="17_idb0s"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dgrrk"]
 shader = ExtResource("2_vgf7k")
@@ -329,7 +330,7 @@ texture = ExtResource("7_m10kg")
 position = Vector2(998, 268)
 amount = 40
 texture = ExtResource("8_jht16")
-lifetime = 100.0
+lifetime = 9999.0
 explosiveness = 1.0
 randomness = 1.0
 fixed_fps = 30
@@ -337,8 +338,8 @@ draw_order = 1
 emission_shape = 3
 emission_rect_extents = Vector2(750, 300)
 gravity = Vector2(0, 0)
-initial_velocity_min = 2.0
-initial_velocity_max = 8.0
+initial_velocity_min = 1.0
+initial_velocity_max = 1.0
 angular_velocity_min = 0.9999839
 angular_velocity_max = 2.9999838
 scale_amount_min = 0.5
@@ -377,9 +378,14 @@ texture = ExtResource("16_jht16")
 
 [node name="CardContainer" type="Node" parent="." unique_id=148490294]
 
+[node name="Deck" parent="." unique_id=152674426 node_paths=PackedStringArray("deck_logic") instance=ExtResource("17_idb0s")]
+z_index = 3
+deck_logic = NodePath("../Script/Deck")
+
 [node name="CardPileDeign" type="Node" parent="." unique_id=1937101763]
 
 [node name="CardBackRed2" type="Sprite2D" parent="CardPileDeign" unique_id=1441705909]
+visible = false
 material = SubResource("ShaderMaterial_0opuu")
 position = Vector2(1772.3801, 737.56146)
 rotation = 1.4189527
@@ -387,6 +393,7 @@ scale = Vector2(0.195, 0.26)
 texture = ExtResource("14_uclpb")
 
 [node name="CardBackRed3" type="Sprite2D" parent="CardPileDeign" unique_id=1089458503]
+visible = false
 material = SubResource("ShaderMaterial_0opuu")
 position = Vector2(1812.38, 741.5615)
 rotation = 1.4189527
@@ -394,6 +401,7 @@ scale = Vector2(0.195, 0.26)
 texture = ExtResource("14_uclpb")
 
 [node name="CardBackRed_main" type="Sprite2D" parent="CardPileDeign" unique_id=1650294829]
+visible = false
 material = SubResource("ShaderMaterial_0opuu")
 position = Vector2(1746.38, 733.5615)
 rotation = 1.5707964

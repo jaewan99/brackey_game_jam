@@ -17,12 +17,12 @@ var current_state: UIState
 @onready var pot_coin: Node2D = %PotsChips
 
 # Deal Phase
-@onready var check: Label = $DealUI/CHECK
-@onready var raise: Label = $DealUI/RAISE
-@onready var call: Label = $DealUI/CALL
-@onready var fold: Label = $DealUI/FOLD
-@onready var allin: Label = $DealUI/ALLIN
-@onready var liar: Label = $DealUI/LIAR
+@onready var check: Button = $DealUI/CHECK
+@onready var raise: Button = $DealUI/RAISE
+@onready var call: Button = $DealUI/CALL
+@onready var fold: Button = $DealUI/FOLD
+@onready var allin: Button = $DealUI/ALLIN
+@onready var liar: Button = $DealUI/LIAR
 
 func _ready() -> void:
 	set_state(UIState.MAIN_MENU)

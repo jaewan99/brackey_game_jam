@@ -1,8 +1,9 @@
-extends Label
+extends Button
 
 @export var bob_amplitude: float = 4.0
 @export var bob_speed: float = 4.0
-@onready var mat: ShaderMaterial = material
+@onready var label: Label = $Label
+var mat: ShaderMaterial
 @export var is_hoverable: bool = true
 
 var game_manager: Node
@@ -11,14 +12,16 @@ var game_manager: Node
 var base_y: float
 var is_hovering: bool = false
 
-# for disable double click
-var input_locked: bool = false
 
 func _ready() -> void:
-	material = material.duplicate()
-	mat = material
+	label.text = text
+	text = ""
+	focus_mode = Control.FOCUS_NONE
+	mat = label.material.duplicate()
+	label.material = mat
 	base_y = position.y
 	game_manager = get_tree().current_scene
+	pressed.connect(_handle_input)
 
 func _process(_delta: float) -> void:
 	if is_hovering:
@@ -43,16 +46,10 @@ func _set_highlight(value: float) -> void:
 	mat.set_shader_parameter("highlight_strength", value)
 
 
-func _on_gui_input(event: InputEvent) -> void:
-	if input_locked:
-		return
-	if event is InputEventMouse and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT:
-		_handle_input()
 
 func _handle_input() -> void:
-	input_locked = true
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	match text:
+	disabled = true
+	match label.text:
 		"START":
 			await game_manager.start_game()
 		"SETTINGS":
@@ -75,5 +72,4 @@ func _handle_input() -> void:
 			await game_manager.player_controller.submit(Action.Type.LIAR)
 		"ALL IN":
 			await game_manager.player_controller.submit(Action.Type.ALLIN)
-	input_locked = false
-	mouse_filter = Control.MOUSE_FILTER_STOP
+	disabled = false

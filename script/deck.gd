@@ -1,3 +1,5 @@
+# this deck gd is for the login part
+
 extends Node
 
 @export var card_scene: PackedScene

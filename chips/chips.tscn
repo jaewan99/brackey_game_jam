@@ -2,15 +2,33 @@
 
 [ext_resource type="Script" uid="uid://dgkyddxqltb5w" path="res://chips/chips.gd" id="1_072nq"]
 [ext_resource type="Texture2D" uid="uid://c03l2xr0vblp7" path="res://art/coins.tres" id="1_cxt62"]
+[ext_resource type="Shader" uid="uid://bvjhmt7cm0hou" path="res://chips/shader/liquid_text.gdshader" id="3_6ob1i"]
+[ext_resource type="FontFile" uid="uid://c4lv6nd8vrnay" path="res://art/fontstyle/EBGaramond/EBGaramond12-Regular.ttf" id="3_026ko"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0l8qx"]
+shader = ExtResource("3_6ob1i")
+shader_parameter/cloud_dark = Color(0.55, 0.02, 0.06, 1)
+shader_parameter/cloud_mid = Color(0.95, 0.15, 0.12, 1)
+shader_parameter/cloud_light = Color(1, 0.6, 0.45, 1)
+shader_parameter/cloud_scale = 0.025
+shader_parameter/cloud_speed = 0.4
+shader_parameter/brightness = 1.15
+shader_parameter/bob_amp = 3.0
+shader_parameter/bob_speed = 3.0
+shader_parameter/bob_spread = 0.012
+shader_parameter/highlight_strength = 0.0
 
 [node name="Chips" type="Node2D" unique_id=1729713730]
 script = ExtResource("1_072nq")
 chip_texture = ExtResource("1_cxt62")
 
 [node name="ChipsCount" type="Label" parent="." unique_id=1220417826]
-visible = false
 z_index = 2
+material = SubResource("ShaderMaterial_0l8qx")
 offset_left = -28.0
 offset_top = -23.0
-offset_right = 27.0
-text = "n coins"
+offset_right = 295.0
+offset_bottom = 98.0
+theme_override_fonts/font = ExtResource("3_026ko")
+theme_override_font_sizes/font_size = 120
+text = "30"

@@ -1,0 +1,75 @@
+[gd_scene format=3 uid="uid://blrmhvde07gbc"]
+
+[ext_resource type="Script" uid="uid://gf8oocv3ax7s" path="res://deck/deck.gd" id="1_pihgb"]
+[ext_resource type="Shader" uid="uid://ba60jlmxluoai" path="res://card/shaders/perspective.gdshader" id="1_rqbxk"]
+[ext_resource type="Texture2D" uid="uid://bijkovjhaoe1t" path="res://card/card_back_red.png" id="2_pihgb"]
+[ext_resource type="Shader" uid="uid://bvjhmt7cm0hou" path="res://chips/shader/liquid_text.gdshader" id="4_878yv"]
+[ext_resource type="FontFile" uid="uid://c4lv6nd8vrnay" path="res://art/fontstyle/EBGaramond/EBGaramond12-Regular.ttf" id="5_b4tqr"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8n6od"]
+shader = ExtResource("1_rqbxk")
+shader_parameter/fov = 90.0
+shader_parameter/cull_back = true
+shader_parameter/y_rot = -44.75599357591
+shader_parameter/x_rot = 29.890009969775008
+shader_parameter/inset = 0.110000005225
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_oroq7"]
+size = Vector2(354.125, 142)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_frvlu"]
+shader = ExtResource("4_878yv")
+shader_parameter/cloud_dark = Color(0.019607844, 0.019607844, 0.019607844, 1)
+shader_parameter/cloud_mid = Color(0.14901961, 0.13725491, 0.14901961, 1)
+shader_parameter/cloud_light = Color(0.47843137, 0.4509804, 0.47058824, 1)
+shader_parameter/cloud_scale = 0.025
+shader_parameter/cloud_speed = 0.4
+shader_parameter/brightness = 1.15
+shader_parameter/bob_amp = 3.0
+shader_parameter/bob_speed = 3.0
+shader_parameter/bob_spread = 0.012
+shader_parameter/highlight_strength = 0.0
+
+[node name="Deck" type="Node2D" unique_id=152674426]
+script = ExtResource("1_pihgb")
+
+[node name="CardBackRed2" type="Sprite2D" parent="." unique_id=213205729]
+material = SubResource("ShaderMaterial_8n6od")
+position = Vector2(1772.3801, 737.56146)
+rotation = 1.4189527
+scale = Vector2(0.195, 0.26)
+texture = ExtResource("2_pihgb")
+
+[node name="CardBackRed3" type="Sprite2D" parent="." unique_id=1702839937]
+material = SubResource("ShaderMaterial_8n6od")
+position = Vector2(1812.38, 741.5615)
+rotation = 1.4189527
+scale = Vector2(0.195, 0.26)
+texture = ExtResource("2_pihgb")
+
+[node name="CardBackRed_main" type="Sprite2D" parent="." unique_id=1884464819]
+material = SubResource("ShaderMaterial_8n6od")
+position = Vector2(1746.38, 733.5615)
+rotation = 1.5707964
+scale = Vector2(0.195, 0.26)
+texture = ExtResource("2_pihgb")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=797558197]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1679114299]
+position = Vector2(1769.0625, 767)
+shape = SubResource("RectangleShape2D_oroq7")
+
+[node name="CardsCount" type="Label" parent="." unique_id=1042219490]
+z_index = 2
+material = SubResource("ShaderMaterial_frvlu")
+offset_left = 1676.0
+offset_top = 694.0
+offset_right = 1798.0
+offset_bottom = 815.0
+theme_override_fonts/font = ExtResource("5_b4tqr")
+theme_override_font_sizes/font_size = 120
+text = "20"
+
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]
