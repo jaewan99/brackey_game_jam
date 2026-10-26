@@ -21,9 +21,13 @@ var to_call := 0
 enum Turn {PLAYER, OPPONENT}
 var current_turn: Turn= Turn.PLAYER
 
+var day := 1
+const SAVE_PATH := "user://save.cfg"
+var best_day := 1
+
 @onready var deck: Node = %Deck
 @onready var ui = %UI
-
+var shake_target: Node          # assigned from game_manager at runtime
 # markers
 @onready var marker = $Marker
 var card_spawn_point :Vector2
@@ -40,7 +44,9 @@ func _ready() -> void:
 	card_player_point = marker.get_node("CardPlayerMark").global_position
 	card_opponent_point = marker.get_node("CardOpponentMark").global_position
 	card_opponent_reveal_point = marker.get_node("CardOpponentRevealMark").global_position
-	
+	ScreenFx.shake_target = $Camera2D
+	_load_best_day()
+
 # --- set up-----
 var opponent_controller = SeatController
 var player_controller = SeatController
@@ -53,11 +59,17 @@ func _setup_controller() -> void:
 # --- start game ---
 func start_game() -> void:
 	ui.set_state(ui.UIState.NONE)
-	await _distribute_starting_chips()
+	day = 1
 	_setup_controller()
+	_begin_match()
+
+func _begin_match() -> void:
 	ANTE = 1
 	pot = 0
+	_apply_day_difficulty()
+	await _distribute_starting_chips()
 	set_round()
+	
 	
 func _distribute_starting_chips() -> void:
 	ui.set_visible_custom(ui.UIState.CHIPS)
@@ -144,6 +156,7 @@ func _betting_phase() -> void:
 		var ctrl = player_controller if seat == Turn.PLAYER else opponent_controller
 		var action = await ctrl.request_action(_build_view(seat))
 		await apply_action(seat, action)
+		ScreenFx.set_tension(_pot_tension())
 		if _bet_over(action):
 			break
 		seat = Turn.OPPONENT if seat == Turn.PLAYER else Turn.PLAYER
@@ -182,24 +195,29 @@ func _commit(is_player: bool, amount:int) -> int:
 	return amount
 #------------------------------------------------- open phase
 func _open_phase() -> void:
+	ScreenFx.set_tension(0.0)
 	ui.set_state(ui.UIState.NONE)
 	
 	# reveal the player's OWN real card
 	await player_card.reveal_to_forehead(card_player_point, 
 		player_card.TransformPreset.PLAYERREVEAL,
 		deck.get_card_texture_path(player_card_number))
+	ScreenFx.shake(8.0, 0.2)
 	match _resolve_winner():
 		Turn.PLAYER:
+			ScreenFx.blood_flash(0.6, Color("d9b45c")) 
 			player_chips += pot
 			await ui.send_chips(ui.pot_coin, ui.player_coin, pot)
 			pot = 0
 			print("player wins")
 		Turn.OPPONENT:
+			ScreenFx.blood_flash(0.85, Color("8a0000"))
 			opponent_chips += pot
 			await ui.send_chips(ui.pot_coin, ui.opponent_coin, pot)
 			pot = 0
 			print("opponent wins")
 		_:
+			ScreenFx.blood_flash(0.3, Color("8a8378"))
 			print("Draw")
 			
 	await _cleanup_round()
@@ -234,12 +252,28 @@ func _cleanup_round() -> void:
 	await get_tree().create_timer(0.6).timeout
 
 func _next_round() -> void:
-	if player_chips <= 0 or opponent_chips <= 0:
-		print("Game over")            # TODO: real end-game / results screen
+	# TODO what if the two ALL INS and a DRAW - right? lose for now, but i want to do like the deathmatch - like opens new card until there's the winner
+	if player_chips <= 0:
+		_end_run()
+		return
+	if opponent_chips <= 0:
+		await _advance_day()
 		return
 	set_round()   # ante + draw + tell + deal again; pot persists so carryover work
 
 # --- aux
+# TODO fix this with the proper scene - like covering the eyes of the player
+func _end_run() -> void:
+	# TODO before going to main menu cover the things - like the coins and such - and reset the deck
+	ScreenFx.blood_flash(0.85, Color("8a0000"))  # red loss
+	day = 1
+	ui.set_state(ui.UIState.MAIN_MENU)
+func _advance_day() -> void:
+	day += 1
+	_record_day()
+	ScreenFx.blood_flash(0.6, Color("d9b45c"))   # gold "you survived" flash
+	# TODO: show a "DAY n" interstitial here before the next match
+	await _begin_match()
 func _send_to_pot(is_player: bool, amount: int) -> void:
 	if amount <= 0:
 		return
@@ -271,3 +305,29 @@ func _seat_lied(teller: Turn) -> bool:
 		return player_tell != opponent_card_number
 	else:
 		return opponent_tell != player_card_number
+
+func _pot_tension() -> float:
+	var total := player_chips + opponent_chips + pot
+	return 0.0 if total <= 0 else float(pot) / float(total)
+	
+func _apply_day_difficulty() -> void:
+	# opponent bluffs more as the days climb -> harder to read. Tune freely.
+	opponent_lie_chance = clampf(0.4 + day * 0.03, 0.0, 0.9)
+
+# -------------
+
+func _load_best_day() -> void:
+	var cfg := ConfigFile.new()
+	if cfg.load(SAVE_PATH) == OK:
+		best_day = int(cfg.get_value("progress", "best_day", 1))
+
+func _save_best_day() -> void:
+	var cfg := ConfigFile.new()
+	cfg.load(SAVE_PATH)                               # keep any other saved values
+	cfg.set_value("progress", "best_day", best_day)
+	cfg.save(SAVE_PATH)
+
+func _record_day() -> void:
+	if day > best_day:
+		best_day = day
+		_save_best_day()
