@@ -45,6 +45,7 @@ func _ready() -> void:
 	card_opponent_point = marker.get_node("CardOpponentMark").global_position
 	card_opponent_reveal_point = marker.get_node("CardOpponentRevealMark").global_position
 	ScreenFx.shake_target = $Camera2D
+	ScreenFx.light_target = $PointLight2D
 	_load_best_day()
 
 # --- set up-----
@@ -64,6 +65,7 @@ func start_game() -> void:
 	_begin_match()
 
 func _begin_match() -> void:
+	await ScreenFx.day_card(day, "A FRESH HAND")
 	ANTE = 1
 	pot = 0
 	_apply_day_difficulty()
@@ -266,12 +268,15 @@ func _next_round() -> void:
 func _end_run() -> void:
 	# TODO before going to main menu cover the things - like the coins and such - and reset the deck
 	ScreenFx.blood_flash(0.85, Color("8a0000"))  # red loss
+	await ScreenFx.sack_drop()
+	await ScreenFx.sack_clear()
 	day = 1
 	ui.set_state(ui.UIState.MAIN_MENU)
 func _advance_day() -> void:
 	day += 1
 	_record_day()
 	ScreenFx.blood_flash(0.6, Color("d9b45c"))   # gold "you survived" flash
+	await ScreenFx.blink(2)
 	# TODO: show a "DAY n" interstitial here before the next match
 	await _begin_match()
 func _send_to_pot(is_player: bool, amount: int) -> void:

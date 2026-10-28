@@ -8,6 +8,23 @@ var _heart: Tween
 @export var heartbeat_min_tension := 0.12     # below this, no pulse at all
 var _tension := -1.0
 
+# --- win and lose
+var light_target: Node2D        # set from game_manager: ScreenFx.light_target = $PointLight2D
+
+# --- win: eyelid blink ---
+var _eye_top: ColorRect
+var _eye_bottom: ColorRect
+var _flicker: Tween
+
+# --- lose: sack drop ---
+var _sack: ColorRect
+# --- 
+
+# --- n-day
+@export var title_font = preload("res://art/fontstyle/EBGaramond/EBGaramond12-Italic.ttf") # optional: assign a vintage serif .ttf (1930s look)
+
+
+
 func _ready() -> void:
 	layer = 100                 # draw above the game
 	vignette = ColorRect.new()
@@ -18,6 +35,36 @@ func _ready() -> void:
 	vignette.material = mat
 	add_child(vignette)
 	_set_strength(0.0)
+	
+	# win and lose
+	# eyelids: two black bars that grow toward the center (top + bottom)
+	_eye_top = ColorRect.new()
+	_eye_top.color = Color.BLACK
+	_eye_top.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_eye_top.anchor_left = 0.0; _eye_top.anchor_right = 1.0     # full width
+	_eye_top.anchor_top = 0.0;  _eye_top.anchor_bottom = 0.0    # pinned to top edge
+	_eye_top.offset_bottom = 0.0                                # starts closed = height 0
+	_eye_top.visible = false
+	add_child(_eye_top)
+
+	_eye_bottom = ColorRect.new()
+	_eye_bottom.color = Color.BLACK
+	_eye_bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_eye_bottom.anchor_left = 0.0; _eye_bottom.anchor_right = 1.0
+	_eye_bottom.anchor_top = 1.0;  _eye_bottom.anchor_bottom = 1.0   # pinned to bottom edge
+	_eye_bottom.offset_top = 0.0
+	_eye_bottom.visible = false
+	add_child(_eye_bottom)
+
+	# sack: black panel whose bottom edge sweeps top -> down over the screen
+	_sack = ColorRect.new()
+	_sack.color = Color.BLACK
+	_sack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_sack.anchor_left = 0.0; _sack.anchor_right = 1.0
+	_sack.anchor_top = 0.0;  _sack.anchor_bottom = 0.0
+	_sack.offset_bottom = 0.0
+	_sack.visible = false
+	add_child(_sack)
 
 
 func _set_strength(v: float) -> void:
@@ -68,3 +115,142 @@ func shake(amount := 10.0, duration := 0.25) -> void:
 		t.tween_property(shake_target, "offset",
 			Vector2(randf_range(-amount, amount), randf_range(-amount, amount)) * decay, 0.02)
 	t.tween_property(shake_target, "offset", Vector2.ZERO, 0.05)
+
+# WIN: eyes blink a couple of times (waking / adjusting to the light) while
+# the hanging light sways. Ends with eyes open.
+func blink(times := 2, close_time := 0.12, hold := 0.05, flicker := true) -> void:
+	var half := get_viewport().get_visible_rect().size.y * 0.5
+	_eye_top.visible = true
+	_eye_bottom.visible = true
+	if flicker:
+		flicker_light()
+	var t := create_tween()
+	for i in times:
+		# close
+		t.tween_property(_eye_top, "offset_bottom", half, close_time).set_ease(Tween.EASE_IN)
+		t.parallel().tween_property(_eye_bottom, "offset_top", -half, close_time).set_ease(Tween.EASE_IN)
+		t.tween_interval(hold)
+		# open
+		t.tween_property(_eye_top, "offset_bottom", 0.0, close_time).set_ease(Tween.EASE_OUT)
+		t.parallel().tween_property(_eye_bottom, "offset_top", 0.0, close_time).set_ease(Tween.EASE_OUT)
+		t.tween_interval(hold)
+	t.tween_callback(func() -> void:
+		_eye_top.visible = false
+		_eye_bottom.visible = false)
+	await t.finished
+
+# Dying-filament flicker: erratic energy stutter — brief near-blackouts,
+# weak glows, the odd bright pop. dying=true leaves it dark; false restores it.
+func flicker_light(base_energy := 1.0, duration := 1.6, dying := false) -> void:
+	if light_target == null:
+		return
+	if _flicker and _flicker.is_running():
+		_flicker.kill()
+	_flicker = create_tween()
+	var elapsed := 0.0
+	while elapsed < duration:
+		var r := randf()
+		var lvl: float
+		if r < 0.35:
+			lvl = randf_range(0.0, 0.12) * base_energy   # near-out
+		elif r < 0.75:
+			lvl = randf_range(0.2, 0.55) * base_energy    # weak glow
+		else:
+			lvl = randf_range(0.85, 1.2) * base_energy    # bright pop
+		var step := randf_range(0.03, 0.11)
+		_flicker.tween_property(light_target, "energy", lvl, step)
+		elapsed += step
+	_flicker.tween_property(light_target, "energy", (0.0 if dying else base_energy), 0.25)
+	
+# LOSE: a black panel sweeps top -> down, covering vision like a sack pulled
+# over the head. Leaves the screen fully covered.
+func sack_drop(duration := 0.9, color := Color.BLACK, settle := true) -> void:
+	var h := get_viewport().get_visible_rect().size.y
+	_sack.color = color
+	_sack.offset_bottom = 0.0
+	_sack.visible = true
+	var t := create_tween()
+	t.tween_property(_sack, "offset_bottom", h, duration) \
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	if settle:
+		# tiny bob as the sack settles
+		t.tween_property(_sack, "offset_bottom", h - 14.0, 0.08)
+		t.tween_property(_sack, "offset_bottom", h, 0.10)
+	await t.finished
+
+# Call when returning to the menu / starting fresh so the screen is clear again.
+func sack_clear() -> void:
+	_sack.visible = false
+	_sack.offset_bottom = 0.0
+	
+func day_card(n: int, subtitle := "", hold := 1.4) -> void:
+	var root := Control.new()
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(root)
+
+	# plain black backdrop again
+	var bg := ColorRect.new()
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bg.color = Color("140d08")
+	root.add_child(bg)
+	
+	# grain overlay — added LAST so it grains the backdrop AND the title text
+	var grain := ColorRect.new()
+	grain.set_anchors_preset(Control.PRESET_FULL_RECT)
+	grain.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var gmat := ShaderMaterial.new()
+	gmat.shader = preload("res://screen_fx/film_grain.gdshader")
+	grain.material = gmat
+	root.add_child(grain)
+	
+	# this layer is what jitters (film weave) — bg underneath doesn't move
+	var weave := Control.new()
+	weave.set_anchors_preset(Control.PRESET_FULL_RECT)
+	weave.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(weave)
+
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	weave.add_child(center)
+
+	var vbox := VBoxContainer.new()
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 10)
+	center.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "DAY %d" % n
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_color_override("font_color", Color("e8d7a0"))
+	title.add_theme_font_size_override("font_size", 92)
+	if title_font: title.add_theme_font_override("font", title_font)
+	vbox.add_child(title)
+
+	if subtitle != "":
+		var sub := Label.new()
+		sub.text = subtitle
+		sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		sub.add_theme_color_override("font_color", Color("c9b483"))
+		sub.add_theme_font_size_override("font_size", 34)
+		if title_font: sub.add_theme_font_override("font", title_font)
+		vbox.add_child(sub)
+
+	# fade in -> flicker + weave -> fade out
+	root.modulate.a = 0.0
+	var tin := create_tween()
+	tin.tween_property(root, "modulate:a", 1.0, 0.35).set_ease(Tween.EASE_OUT)
+	await tin.finished
+
+	var fl := create_tween()
+	var elapsed := 0.0
+	while elapsed < hold:
+		var step := randf_range(0.05, 0.12)
+		fl.tween_property(weave, "position:y", randf_range(-1.5, 1.5), step)
+		elapsed += step
+	await fl.finished
+
+	var tout := create_tween()
+	tout.tween_property(root, "modulate:a", 0.0, 0.35).set_ease(Tween.EASE_IN)
+	await tout.finished
+	root.queue_free()
