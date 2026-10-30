@@ -1,8 +1,8 @@
 shader_type canvas_item;
 
 uniform sampler2D screen_tex : hint_screen_texture;
-uniform float noise_intensity : hint_range(0.0, 1.0) = 0.08;
-uniform float flicker : hint_range(0.0, 0.5) = 0.04;
+uniform float noise_intensity : hint_range(0.0, 1.0) = 0.02;
+uniform float flicker : hint_range(0.0, 0.5) = 0.002;
 uniform float vignette : hint_range(0.0, 2.0) = 0.9;
 
 float random(vec2 uv) {

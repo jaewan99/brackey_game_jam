@@ -15,7 +15,9 @@
 [ext_resource type="Script" uid="uid://dakwh74w1b2v0" path="res://script/ui_manager.gd" id="11_jht16"]
 [ext_resource type="PackedScene" uid="uid://bjhxkrvyuqk6r" path="res://card/card.tscn" id="11_uclpb"]
 [ext_resource type="Texture2D" uid="uid://d2bq54ppbtu7d" path="res://card/cards/2_of_clubs.png" id="13_0opuu"]
+[ext_resource type="Shader" uid="uid://byhqiah5x6rj7" path="res://text/text.gdshader" id="13_imjiu"]
 [ext_resource type="PackedScene" uid="uid://ddamdm11qakt" path="res://chips/chips.tscn" id="14_87ufc"]
+[ext_resource type="FontFile" uid="uid://c4lv6nd8vrnay" path="res://art/fontstyle/EBGaramond/EBGaramond12-Regular.ttf" id="14_holqj"]
 [ext_resource type="Texture2D" uid="uid://b5gsqgwrbul8l" path="res://card/cards/2_of_spades.png" id="16_jht16"]
 [ext_resource type="PackedScene" uid="uid://blrmhvde07gbc" path="res://deck/deck.tscn" id="17_idb0s"]
 
@@ -30,6 +32,13 @@ shader_parameter/outer = 0.95
 shader = ExtResource("2_vgf7k")
 shader_parameter/color_levels = 9
 shader_parameter/posterize_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_peq34"]
+shader = ExtResource("13_imjiu")
+shader_parameter/rust_tiling = 3.0
+shader_parameter/rust_amount = 0.7
+shader_parameter/highlight_tint = Color(1, 0.2, 0.15, 1)
+shader_parameter/highlight_strength = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_m10kg"]
 shader = ExtResource("11_0opuu")
@@ -206,6 +215,7 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="DealUI" type="Control" parent="UI" unique_id=1184642475]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -289,24 +299,30 @@ theme_override_font_sizes/font_size = 84
 text = "LIAR"
 
 [node name="TruthLieUI" type="Control" parent="UI" unique_id=1898903494]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="Desc" parent="UI/TruthLieUI" unique_id=181616160 instance=ExtResource("9_x3qnp")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 713.0
-offset_top = 133.0
-offset_right = 1270.0
-offset_bottom = 203.0
-theme_override_font_sizes/font_size = 64
-text = "Tell them what you see"
-is_hoverable = false
+[node name="Desc" type="Label" parent="UI/TruthLieUI" unique_id=578532489]
+material = SubResource("ShaderMaterial_peq34")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 560.0
+offset_top = 80.0
+offset_right = 1320.0
+offset_bottom = 141.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("14_holqj")
+theme_override_font_sizes/font_size = 60
+text = "TELL THEM WHAT YOU SEE"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Truth" parent="UI/TruthLieUI" unique_id=707509783 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
@@ -315,8 +331,8 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 offset_left = 334.0
 offset_top = 269.0
-offset_right = 795.0
-offset_bottom = 398.0
+offset_right = 803.0
+offset_bottom = 406.0
 text = "TRUTH"
 
 [node name="Lie" parent="UI/TruthLieUI" unique_id=226338806 instance=ExtResource("9_x3qnp")]

@@ -23,7 +23,9 @@ var _sack: ColorRect
 # --- n-day
 @export var title_font = preload("res://art/fontstyle/EBGaramond/EBGaramond12-Italic.ttf") # optional: assign a vintage serif .ttf (1930s look)
 
-
+# grain
+var _grain: ColorRect
+var _grain_tween: Tween
 
 func _ready() -> void:
 	layer = 100                 # draw above the game
@@ -65,6 +67,19 @@ func _ready() -> void:
 	_sack.offset_bottom = 0.0
 	_sack.visible = false
 	add_child(_sack)
+	
+	# persistent film grain — own layer above everything else in ScreenFx
+	var grain_layer := CanvasLayer.new()
+	grain_layer.layer = 101
+	add_child(grain_layer)
+
+	_grain = ColorRect.new()
+	_grain.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_grain.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var gmat := ShaderMaterial.new()
+	gmat.shader = preload("res://screen_fx/film_grain.gdshader")
+	_grain.material = gmat
+	grain_layer.add_child(_grain)
 
 
 func _set_strength(v: float) -> void:
@@ -253,4 +268,6 @@ func day_card(n: int, subtitle := "", hold := 1.4) -> void:
 	var tout := create_tween()
 	tout.tween_property(root, "modulate:a", 0.0, 0.35).set_ease(Tween.EASE_IN)
 	await tout.finished
+	
+
 	root.queue_free()

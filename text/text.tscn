@@ -27,10 +27,10 @@ shader_parameter/highlight_strength = 0.0
 [node name="Label" type="Button" unique_id=439202351]
 material = SubResource("ShaderMaterial_giq6a")
 anchors_preset = -1
-anchor_right = 0.171
-anchor_bottom = 0.119
-offset_right = 7.6799927
-offset_bottom = 8.479996
+anchor_right = 0.149
+anchor_bottom = 0.069000006
+offset_right = -0.08001709
+offset_bottom = 0.47999573
 theme_override_fonts/font = ExtResource("1_yjsib")
 theme_override_font_sizes/font_size = 128
 script = ExtResource("2_7fjir")
@@ -38,11 +38,11 @@ script = ExtResource("2_7fjir")
 [node name="Label" type="Label" parent="." unique_id=2025771783]
 material = SubResource("ShaderMaterial_r1cwm")
 layout_mode = 0
-offset_right = 339.0
-offset_bottom = 138.0
+offset_right = 283.0
+offset_bottom = 81.0
 theme_override_fonts/font = ExtResource("1_yjsib")
-theme_override_font_sizes/font_size = 100
-text = "CHECK"
+theme_override_font_sizes/font_size = 80
+text = "TRUTH"
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
