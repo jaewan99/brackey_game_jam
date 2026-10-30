@@ -57,5 +57,5 @@ func update_action_visibility(is_player_turn: bool, legal: Array) -> void:
 	liar.visible  = Action.Type.LIAR in legal
 
 func _hide_all_actions():
-	for lbl in [check, raise, call, fold, allin, liar]:
+	for lbl in [check, raise, callBtn, fold, allin, liar]:
 		lbl.visible = false
