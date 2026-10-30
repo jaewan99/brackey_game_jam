@@ -218,23 +218,9 @@ func _open_phase() -> void:
 		player_card.TransformPreset.PLAYERREVEAL,
 		deck.get_card_texture_path(player_card_number))
 	ScreenFx.shake(8.0, 0.2)
-	match _resolve_winner():
-		Turn.PLAYER:
-			ScreenFx.blood_flash(0.6, Color("557a30ff")) 
-			player_chips += pot
-			await ui.send_chips(ui.pot_coin, ui.player_coin, pot)
-			pot = 0
-			print("player wins")
-		Turn.OPPONENT:
-			ScreenFx.blood_flash(0.85, Color("8a0000"))
-			opponent_chips += pot
-			await ui.send_chips(ui.pot_coin, ui.opponent_coin, pot)
-			pot = 0
-			print("opponent wins")
-		_:
-			ScreenFx.blood_flash(0.3, Color("8a8378"))
-			print("Draw")
-			
+	_pay_pot(_resolve_winner())            # no await: starts flying
+	await _settle_lie_penalty()            # penalty flies at the same time
+	await get_tree().create_timer(0.3).timeout   # let the pot finish landing
 	await _cleanup_round()
 	_next_round()
 
@@ -437,3 +423,54 @@ func _settle_lie_penalty() -> void:
 		ui.player_coin if payer_is_player else ui.opponent_coin,
 		ui.opponent_coin if payer_is_player else ui.player_coin,
 		amount)
+		
+# tie at showdown but someone is broke -> nobody can ante again, so settle it now:
+# flip one card each, face-up, until the ranks differ. Winner takes the pot.
+func _deathmatch() -> void:
+	ScreenFx.set_tension(1.0)
+	while true:
+		player_card_number = deck.draw_card()      # deck rebuilds itself when empty
+		opponent_card_number = deck.draw_card()
+
+		player_card = deck.spawn_card_at_marker(card_spawn_point, player_card_number, true)
+		opponent_card = deck.spawn_card_at_marker(card_spawn_point, opponent_card_number, false)
+		await player_card.send_card_to(card_player_point, player_card.TransformPreset.PLAYER)
+		await opponent_card.send_card_to(card_opponent_point, player_card.TransformPreset.OPPONENT)
+
+		# no tell phase: both real cards go face-up straight away
+		await opponent_card.reveal_to_forehead(card_opponent_reveal_point,
+			player_card.TransformPreset.OPPONENTREVEAL,
+			deck.get_card_texture_path(opponent_card_number))
+		await player_card.reveal_to_forehead(card_player_point,
+			player_card.TransformPreset.PLAYERREVEAL,
+			deck.get_card_texture_path(player_card_number))
+		ScreenFx.shake(12.0, 0.25)
+
+		var p_rank: int = deck.get_rank(player_card_number)
+		var o_rank: int = deck.get_rank(opponent_card_number)
+		if p_rank == o_rank:
+			await _pay_pot(null)                   # grey flash, pot stays, go again
+			await _cleanup_round()
+			continue
+		await _pay_pot(Turn.PLAYER if p_rank > o_rank else Turn.OPPONENT)
+		await _cleanup_round()
+		ScreenFx.set_tension(0.0)
+		return
+		
+func _pay_pot(winner) -> void:
+	match winner:
+		Turn.PLAYER:
+			ScreenFx.blood_flash(0.6, Color("557a30ff"))
+			player_chips += pot
+			await ui.send_chips(ui.pot_coin, ui.player_coin, pot)
+			pot = 0
+			print("player wins")
+		Turn.OPPONENT:
+			ScreenFx.blood_flash(0.85, Color("8a0000"))
+			opponent_chips += pot
+			await ui.send_chips(ui.pot_coin, ui.opponent_coin, pot)
+			pot = 0
+			print("opponent wins")
+		_:
+			ScreenFx.blood_flash(0.3, Color("8a8378"))   # tie: pot carries
+			print("Draw")
