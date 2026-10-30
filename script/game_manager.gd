@@ -41,6 +41,8 @@ var _checks_in_row := 0
 
 
 const LIE_PENALTY := 6
+var player_aggression := 0.3
+
 
 func _ready() -> void:
 	card_spawn_point = marker.get_node("CardSpawnMark").global_position
@@ -71,6 +73,8 @@ func _begin_match() -> void:
 	await ScreenFx.day_card(day, "A FRESH HAND")
 	ANTE = 1
 	pot = 0
+	player_aggression = 0.3
+	opponent_controller.brain.reset_memory()   # each day is a new stranger
 	_apply_day_difficulty()
 	await _distribute_starting_chips()
 	set_round()
@@ -134,10 +138,7 @@ func tell_lie() -> void:
 	_opponent_tell()
 	_finish_tell_phase()
 func _opponent_tell() -> void:
-	if randf() < opponent_lie_chance:
-		opponent_tell = deck.get_random_card_excluding(player_card_number)
-	else:
-		opponent_tell = player_card_number
+	opponent_tell = opponent_controller.brain.choose_tell(player_card_number, opponent_lie_chance)
 func _finish_tell_phase() -> void:
 	ui.set_state(ui.UIState.NONE)
 	await player_card.reveal_to_forehead(card_player_point, player_card.TransformPreset.PLAYERREVEAL,deck.get_card_texture_path(opponent_tell))
@@ -174,6 +175,10 @@ func _betting_phase() -> void:
 		
 func apply_action(seat: Turn, action: Action.Type) -> void:
 	var is_player := seat == Turn.PLAYER
+	# moving average: recent actions count more, old ones fade
+	if is_player and action != Action.Type.LIAR:
+		var hit := 1.0 if action == Action.Type.RAISE or action == Action.Type.ALLIN else 0.0
+		player_aggression = lerpf(player_aggression, hit, 0.25)
 	match action:
 		Action.Type.FOLD:
 			_folded_seat = seat
@@ -218,6 +223,7 @@ func _open_phase() -> void:
 		player_card.TransformPreset.PLAYERREVEAL,
 		deck.get_card_texture_path(player_card_number))
 	ScreenFx.shake(8.0, 0.2)
+	opponent_controller.brain.observe_hand(not _seat_lied(Turn.PLAYER)) # learns the player hand
 	_pay_pot(_resolve_winner())            # no await: starts flying
 	await _settle_lie_penalty()            # penalty flies at the same time
 	await get_tree().create_timer(0.3).timeout   # let the pot finish landing
@@ -284,15 +290,22 @@ func _send_to_pot(is_player: bool, amount: int) -> void:
 	
 # -- only what a seat is allowed to know (this is your serialization boundary) ---
 func _build_view(seat: Turn) -> Dictionary:
-	var i_am_player := seat == Turn.PLAYER
+	var me_player := seat == Turn.PLAYER
+	var their_card := opponent_card_number if me_player else player_card_number
+	var told_me := opponent_tell if me_player else player_tell   # what I was told about MY card
+	var i_told := player_tell if me_player else opponent_tell    # what I told THEM
 	return {
-		# the card THIS seat can see = the *other* player's real card
-		"player_card": deck.get_rank(player_card_number if not i_am_player else opponent_card_number),
+		"their_rank": deck.get_rank(their_card),
+		"told_rank": deck.get_rank(told_me),
+		"my_tell_rank": deck.get_rank(i_told),
 		"pot": pot,
 		"to_call": to_call,
-		"ai_chips": opponent_chips if not i_am_player else player_chips,
-		"player_aggression": 0.0,   # TODO: derive from betting history
+		"my_chips": _chips_of(seat),
+		"their_chips": _chips_of(_other(seat)),
 		"bet_unit": BET_UNIT,
+		"lie_penalty": LIE_PENALTY,
+		"player_aggression": player_aggression,
+		"legal": _legal_actions(seat),
 	}
 func _bet_over(action: Action.Type) -> bool:
 	match action:
@@ -313,9 +326,14 @@ func _pot_tension() -> float:
 	return 0.0 if total <= 0 else float(pot) / float(total)
 	
 func _apply_day_difficulty() -> void:
-	# opponent bluffs more as the days climb -> harder to read. Tune freely.
-	opponent_lie_chance = clampf(0.4 + day * 0.03, 0.0, 0.9)
-
+	# later days: lies more, reads you better, learns faster. Tune freely.
+	var b: AIOpponent = opponent_controller.brain
+	opponent_lie_chance = clampf(0.3 + day * 0.03, 0.0, 0.7)
+	b.aggression       = clampf(0.4 + day * 0.03, 0.0, 0.8)
+	b.bluff_rate       = clampf(0.15 + day * 0.02, 0.0, 0.4)
+	b.read_sensitivity = clampf(0.3 + day * 0.05, 0.0, 0.9)
+	b.learn_rate       = clampf(0.15 + day * 0.03, 0.0, 0.5)
+	b.caution          = clampf(0.25 - day * 0.02, 0.05, 0.25)
 # -------------
 
 func _load_best_day() -> void:
@@ -464,15 +482,15 @@ func _pay_pot(winner) -> void:
 	match winner:
 		Turn.PLAYER:
 			ScreenFx.blood_flash(0.6, Color("557a30ff"))
+			pot = 0
 			player_chips += amount
 			await ui.send_chips(ui.pot_coin, ui.player_coin, pot)
-			pot = 0
 			print("player wins")
 		Turn.OPPONENT:
 			ScreenFx.blood_flash(0.85, Color("8a0000"))
+			pot = 0
 			opponent_chips += amount
 			await ui.send_chips(ui.pot_coin, ui.opponent_coin, pot)
-			pot = 0
 			print("opponent wins")
 		_:
 			ScreenFx.blood_flash(0.3, Color("8a8378"))   # tie: pot carries
