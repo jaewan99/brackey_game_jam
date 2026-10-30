@@ -25,7 +25,6 @@ var _sack: ColorRect
 
 # grain
 var _grain: ColorRect
-var _grain_tween: Tween
 
 func _ready() -> void:
 	layer = 100                 # draw above the game

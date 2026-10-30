@@ -484,13 +484,13 @@ func _pay_pot(winner) -> void:
 			ScreenFx.blood_flash(0.6, Color("557a30ff"))
 			pot = 0
 			player_chips += amount
-			await ui.send_chips(ui.pot_coin, ui.player_coin, pot)
+			await ui.send_chips(ui.pot_coin, ui.player_coin, amount)
 			print("player wins")
 		Turn.OPPONENT:
 			ScreenFx.blood_flash(0.85, Color("8a0000"))
 			pot = 0
 			opponent_chips += amount
-			await ui.send_chips(ui.pot_coin, ui.opponent_coin, pot)
+			await ui.send_chips(ui.pot_coin, ui.opponent_coin, amount)
 			print("opponent wins")
 		_:
 			ScreenFx.blood_flash(0.3, Color("8a8378"))   # tie: pot carries

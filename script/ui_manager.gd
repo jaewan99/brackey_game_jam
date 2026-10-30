@@ -19,7 +19,7 @@ var current_state: UIState
 # Deal Phase
 @onready var check: Button = $DealUI/CHECK
 @onready var raise: Button = $DealUI/RAISE
-@onready var call: Button = $DealUI/CALL
+@onready var callBtn: Button = $DealUI/CALL
 @onready var fold: Button = $DealUI/FOLD
 @onready var allin: Button = $DealUI/ALLIN
 @onready var liar: Button = $DealUI/LIAR
@@ -50,7 +50,7 @@ func update_action_visibility(is_player_turn: bool, legal: Array) -> void:
 		_hide_all_actions()
 		return
 	check.visible = Action.Type.CHECK in legal
-	call.visible  = Action.Type.CALL in legal
+	callBtn.visible  = Action.Type.CALL in legal
 	raise.visible = Action.Type.RAISE in legal
 	allin.visible = Action.Type.ALLIN in legal
 	fold.visible  = Action.Type.FOLD in legal
