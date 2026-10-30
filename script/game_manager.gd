@@ -40,7 +40,7 @@ var _liar_seat = null
 var _checks_in_row := 0
 
 
-var LIE_PENALTY := maxi(BET_UNIT * 2, pot / 2)
+const LIE_PENALTY := 6
 
 func _ready() -> void:
 	card_spawn_point = marker.get_node("CardSpawnMark").global_position
@@ -252,14 +252,16 @@ func _cleanup_round() -> void:
 	await get_tree().create_timer(0.6).timeout
 
 func _next_round() -> void:
-	# TODO what if the two ALL INS and a DRAW - right? lose for now, but i want to do like the deathmatch - like opens new card until there's the winner
+	# tie with someone broke -> settle the pot with a deathmatch first
+	if pot > 0 and (player_chips <= 0 or opponent_chips <= 0):
+		await _deathmatch()
 	if player_chips <= 0:
 		_end_run()
 		return
 	if opponent_chips <= 0:
 		await _advance_day()
 		return
-	set_round()   # ante + draw + tell + deal again; pot persists so carryover work
+	set_round()
 
 # --- aux
 func _end_run() -> void:
@@ -458,16 +460,17 @@ func _deathmatch() -> void:
 		return
 		
 func _pay_pot(winner) -> void:
+	var amount := pot
 	match winner:
 		Turn.PLAYER:
 			ScreenFx.blood_flash(0.6, Color("557a30ff"))
-			player_chips += pot
+			player_chips += amount
 			await ui.send_chips(ui.pot_coin, ui.player_coin, pot)
 			pot = 0
 			print("player wins")
 		Turn.OPPONENT:
 			ScreenFx.blood_flash(0.85, Color("8a0000"))
-			opponent_chips += pot
+			opponent_chips += amount
 			await ui.send_chips(ui.pot_coin, ui.opponent_coin, pot)
 			pot = 0
 			print("opponent wins")

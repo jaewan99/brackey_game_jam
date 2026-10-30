@@ -216,14 +216,14 @@ func day_card(n: int, subtitle := "", hold := 1.4, backdrop := true) -> void:
 		bg.color = Color("140d08")
 		root.add_child(bg)
 	
-	# grain overlay — added LAST so it grains the backdrop AND the title text
-	var grain := ColorRect.new()
-	grain.set_anchors_preset(Control.PRESET_FULL_RECT)
-	grain.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var gmat := ShaderMaterial.new()
-	gmat.shader = preload("res://screen_fx/film_grain.gdshader")
-	grain.material = gmat
-	root.add_child(grain)
+	# grain overlay — added LAST so it grains the backdrop AND the title text (now always added)
+	#var grain := ColorRect.new()
+	#grain.set_anchors_preset(Control.PRESET_FULL_RECT)
+	#grain.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	#var gmat := ShaderMaterial.new()
+	#gmat.shader = preload("res://screen_fx/film_grain.gdshader")
+	#grain.material = gmat
+	#root.add_child(grain)
 	
 	# this layer is what jitters (film weave) — bg underneath doesn't move
 	var weave := Control.new()
