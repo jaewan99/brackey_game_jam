@@ -194,21 +194,27 @@ func sack_drop(duration := 0.9, color := Color.BLACK, settle := true) -> void:
 	await t.finished
 
 # Call when returning to the menu / starting fresh so the screen is clear again.
-func sack_clear() -> void:
+func sack_clear(duration := 0.0) -> void:
+	if duration > 0.0:
+		var t := create_tween()
+		t.tween_property(_sack, "modulate:a", 0.0, duration).set_ease(Tween.EASE_IN_OUT)
+		await t.finished
 	_sack.visible = false
 	_sack.offset_bottom = 0.0
+	_sack.modulate.a = 1.0      # reset so the next sack_drop is solid again
 	
-func day_card(n: int, subtitle := "", hold := 1.4) -> void:
+func day_card(n: int, subtitle := "", hold := 1.4, backdrop := true) -> void:
 	var root := Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
 
 	# plain black backdrop again
-	var bg := ColorRect.new()
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	bg.color = Color("140d08")
-	root.add_child(bg)
+	if backdrop:
+		var bg := ColorRect.new()
+		bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+		bg.color = Color("140d08")
+		root.add_child(bg)
 	
 	# grain overlay — added LAST so it grains the backdrop AND the title text
 	var grain := ColorRect.new()

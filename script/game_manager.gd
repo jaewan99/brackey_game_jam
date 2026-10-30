@@ -39,6 +39,9 @@ var _folded_seat = null
 var _liar_seat = null
 var _checks_in_row := 0
 
+
+var LIE_PENALTY := maxi(BET_UNIT * 2, pot / 2)
+
 func _ready() -> void:
 	card_spawn_point = marker.get_node("CardSpawnMark").global_position
 	card_player_point = marker.get_node("CardPlayerMark").global_position
@@ -154,14 +157,20 @@ func _start_deal_phase() -> void:
 func _betting_phase() -> void:
 	var seat := Turn.PLAYER
 	while true:
-		ui.update_action_visibility(true, to_call, player_chips, opponent_chips, BET_UNIT)
+		if _betting_locked(seat):
+			break
+		var legal := _legal_actions(seat)
+		ui.update_action_visibility(seat == Turn.PLAYER, legal)
 		var ctrl = player_controller if seat == Turn.PLAYER else opponent_controller
 		var action = await ctrl.request_action(_build_view(seat))
+		if action not in legal:
+			action = _fallback(legal)
 		await apply_action(seat, action)
 		ScreenFx.set_tension(_pot_tension())
 		if _bet_over(action):
 			break
-		seat = Turn.OPPONENT if seat == Turn.PLAYER else Turn.PLAYER
+		seat = _other(seat)
+	ui.update_action_visibility(false, [])
 		
 func apply_action(seat: Turn, action: Action.Type) -> void:
 	var is_player := seat == Turn.PLAYER
@@ -171,20 +180,24 @@ func apply_action(seat: Turn, action: Action.Type) -> void:
 		Action.Type.CHECK:
 			_checks_in_row += 1
 		Action.Type.CALL:
-			var moved := _commit(is_player, to_call)
+			var owed := to_call
+			var moved := _commit(is_player, owed)
 			await _send_to_pot(is_player, moved)
+			if moved < owed:                         # short call: return the uncalled part
+				await _refund(not is_player, owed - moved)
 			to_call = 0
-		Action.Type.RAISE:
-			var moved := _commit(is_player, to_call + BET_UNIT)
+		Action.Type.RAISE, Action.Type.ALLIN:
+			var owed := to_call
+			var want: int = owed + BET_UNIT if action == Action.Type.RAISE else _chips_of(seat)
+			want = mini(want, owed + _chips_of(_other(seat)))   # never bet more than they can match
+			var moved := _commit(is_player, want)
 			await _send_to_pot(is_player, moved)
-			to_call = BET_UNIT
 			_checks_in_row = 0
-		Action.Type.ALLIN:
-			var stack := player_chips if is_player else opponent_chips
-			var moved := _commit(is_player, stack)
-			await _send_to_pot(is_player, moved)
-			to_call = maxi(0, stack - to_call)
-			_checks_in_row = 0
+			if moved <= owed:                        # couldn't even cover it -> it's a short call
+				await _refund(not is_player, owed - moved)
+				to_call = 0
+			else:
+				to_call = moved - owed               # what the other side must now match
 		Action.Type.LIAR:
 			_liar_seat = seat
 
@@ -207,7 +220,7 @@ func _open_phase() -> void:
 	ScreenFx.shake(8.0, 0.2)
 	match _resolve_winner():
 		Turn.PLAYER:
-			ScreenFx.blood_flash(0.6, Color("d9b45c")) 
+			ScreenFx.blood_flash(0.6, Color("557a30ff")) 
 			player_chips += pot
 			await ui.send_chips(ui.pot_coin, ui.player_coin, pot)
 			pot = 0
@@ -239,7 +252,6 @@ func _resolve_winner():
 	# showdown: compare ranks only (suits don't break ties)
 	var p_rank :int = deck.get_rank(player_card_number)
 	var o_rank :int = deck.get_rank(opponent_card_number)
-	#print("resolve",p_rank, o_rank)
 	if p_rank > o_rank:
 		return Turn.PLAYER
 	if o_rank > p_rank:
@@ -264,20 +276,17 @@ func _next_round() -> void:
 	set_round()   # ante + draw + tell + deal again; pot persists so carryover work
 
 # --- aux
-# TODO fix this with the proper scene - like covering the eyes of the player
 func _end_run() -> void:
-	# TODO before going to main menu cover the things - like the coins and such - and reset the deck
 	ScreenFx.blood_flash(0.85, Color("8a0000"))  # red loss
 	await ScreenFx.sack_drop()
-	await ScreenFx.sack_clear()
-	day = 1
-	ui.set_state(ui.UIState.MAIN_MENU)
+	await _reset_game_and_return_to_main()
+	await ScreenFx.sack_clear(0.8)
+
 func _advance_day() -> void:
 	day += 1
 	_record_day()
 	ScreenFx.blood_flash(0.6, Color("d9b45c"))   # gold "you survived" flash
 	await ScreenFx.blink(2)
-	# TODO: show a "DAY n" interstitial here before the next match
 	await _begin_match()
 func _send_to_pot(is_player: bool, amount: int) -> void:
 	if amount <= 0:
@@ -336,3 +345,95 @@ func _record_day() -> void:
 	if day > best_day:
 		best_day = day
 		_save_best_day()
+
+func _reset_game_and_return_to_main() -> void:
+	ScreenFx.set_tension(0.0)              # kill the heartbeat
+	ui.chips_ui.visible = false
+	pot = 0
+	player_chips = START_CHIPS
+	opponent_chips = START_CHIPS
+	ui.player_coin.set_amount(0)
+	ui.opponent_coin.set_amount(0)
+	ui.pot_coin.set_amount(0)
+	if is_instance_valid(player_card): player_card.queue_free()
+	if is_instance_valid(opponent_card): opponent_card.queue_free()
+	deck._build_deck()                     # fresh shuffled deck for the next run
+	player_tell = -1
+	opponent_tell = -1
+	# optional "proper ending" card: shown over the sack before returning
+	await ScreenFx.day_card(day, "YOU DID NOT SURVIVE   ·   BEST: DAY %d" % best_day, 2.0, false)
+	day = 1
+	ui.set_state(ui.UIState.MAIN_MENU)
+
+# ----------------------- action decision - for the betting phase
+func _other(seat: Turn) -> Turn:
+	return Turn.OPPONENT if seat == Turn.PLAYER else Turn.PLAYER
+
+func _chips_of(seat: Turn) -> int:
+	return player_chips if seat == Turn.PLAYER else opponent_chips
+
+# the ONE place that knows what a seat may do right now
+func _legal_actions(seat: Turn) -> Array:
+	var me := _chips_of(seat)
+	var them := _chips_of(_other(seat))
+	var acts := [Action.Type.FOLD, Action.Type.LIAR]
+	if to_call == 0:
+		acts.append(Action.Type.CHECK)
+	else:
+		acts.append(Action.Type.CALL)          # short call allowed (calls all-in)
+	# raising only makes sense if the other side can still answer it
+	if them > 0 and me > to_call:
+		if me >= to_call + BET_UNIT:
+			acts.append(Action.Type.RAISE)
+		acts.append(Action.Type.ALLIN)
+	return acts
+
+# nothing left to decide: I'm all in, or they're all in and I've matched
+func _betting_locked(seat: Turn) -> bool:
+	if _chips_of(seat) <= 0:
+		return true
+	return _chips_of(_other(seat)) <= 0 and to_call == 0
+
+# if the AI picks something illegal, take the safest legal option
+func _fallback(legal: Array) -> Action.Type:
+	if Action.Type.CHECK in legal: return Action.Type.CHECK
+	if Action.Type.CALL in legal: return Action.Type.CALL
+	return Action.Type.FOLD
+	
+# give back chips the other side couldn't match
+func _refund(to_player: bool, amount: int) -> void:
+	if amount <= 0:
+		return
+	pot -= amount
+	if to_player:
+		player_chips += amount
+	else:
+		opponent_chips += amount
+	await ui.send_chips(ui.pot_coin, ui.player_coin if to_player else ui.opponent_coin, amount)
+
+# function for the lie detection
+# extra chips on top of the pot for whoever got fooled / caught / falsely accused
+func _settle_lie_penalty() -> void:
+	var payer = null
+	if _folded_seat != null and _seat_lied(_other(_folded_seat)):
+		payer = _folded_seat                                   # fooled into folding
+	elif _liar_seat != null:
+		var accused := _other(_liar_seat)
+		payer = accused if _seat_lied(accused) else _liar_seat  # caught / false accusation
+	if payer == null:
+		return
+	var amount := mini(LIE_PENALTY, _chips_of(payer))
+	if amount <= 0:
+		return
+	var payer_is_player: bool = payer == Turn.PLAYER
+	if payer_is_player:
+		player_chips -= amount
+		opponent_chips += amount
+	else:
+		opponent_chips -= amount
+		player_chips += amount
+	ScreenFx.shake(6.0, 0.15)
+	await ui.send_chips(
+		ui.player_coin if payer_is_player else ui.opponent_coin,
+		ui.opponent_coin if payer_is_player else ui.player_coin,
+		amount)

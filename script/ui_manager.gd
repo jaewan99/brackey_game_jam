@@ -45,24 +45,16 @@ func set_visible_custom(state: UIState) -> void:
 			chips_ui.visible = true
 		
 
-# TODO fix this since there are edge cases
-func update_action_visibility(is_player_turn: bool, to_call: int, player_chips: int, opponent_chips: int, bet_unit: int = 3) -> void:
+func update_action_visibility(is_player_turn: bool, legal: Array) -> void:
 	if not is_player_turn:
 		_hide_all_actions()
 		return
-	var facing := to_call > 0
-	var can_act := player_chips > 0
-	var opp_live := opponent_chips > 0
-	var can_call := facing and player_chips >= to_call
-	var full_raise := player_chips >= to_call + bet_unit
-	var raise_ok := full_raise and opponent_chips > 0
-	
-	check.visible = can_act and not facing
-	call.visible = can_act and can_call
-	raise.visible = can_act and raise_ok and opp_live
-	allin.visible = can_act and opp_live
-	fold.visible = true # can always fold
-	liar.visible = true
+	check.visible = Action.Type.CHECK in legal
+	call.visible  = Action.Type.CALL in legal
+	raise.visible = Action.Type.RAISE in legal
+	allin.visible = Action.Type.ALLIN in legal
+	fold.visible  = Action.Type.FOLD in legal
+	liar.visible  = Action.Type.LIAR in legal
 
 func _hide_all_actions():
 	for lbl in [check, raise, call, fold, allin, liar]:
