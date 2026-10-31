@@ -153,8 +153,8 @@ func blink(times := 2, close_time := 0.12, hold := 0.05, flicker := true) -> voi
 		_eye_bottom.visible = false)
 	await t.finished
 
-# Dying-filament flicker: erratic energy stutter — brief near-blackouts,
-# weak glows, the odd bright pop. dying=true leaves it dark; false restores it.
+# Dying-filament flicker: discrete blinks — light snaps off, holds dark a beat,
+# snaps back, holds lit, repeat. dying=true leaves it dark; false restores it.
 func flicker_light(base_energy := 1.0, duration := 1.6, dying := false) -> void:
 	if light_target == null:
 		return
@@ -163,17 +163,17 @@ func flicker_light(base_energy := 1.0, duration := 1.6, dying := false) -> void:
 	_flicker = create_tween()
 	var elapsed := 0.0
 	while elapsed < duration:
-		var r := randf()
-		var lvl: float
-		if r < 0.35:
-			lvl = randf_range(0.0, 0.12) * base_energy   # near-out
-		elif r < 0.75:
-			lvl = randf_range(0.2, 0.55) * base_energy    # weak glow
-		else:
-			lvl = randf_range(0.85, 1.2) * base_energy    # bright pop
-		var step := randf_range(0.03, 0.11)
-		_flicker.tween_property(light_target, "energy", lvl, step)
-		elapsed += step
+		# off: snap down, hold dark
+		var off_lvl := randf_range(0.0, 0.1) * base_energy
+		var off_hold := randf_range(0.08, 0.2)
+		_flicker.tween_property(light_target, "energy", off_lvl, 0.02)
+		_flicker.tween_interval(off_hold)
+		# on: snap back (sometimes weak, sometimes a bright pop), hold lit
+		var on_lvl := base_energy * (randf_range(0.9, 1.2) if randf() < 0.7 else randf_range(0.35, 0.6))
+		var on_hold := randf_range(0.12, 0.4)
+		_flicker.tween_property(light_target, "energy", on_lvl, 0.02)
+		_flicker.tween_interval(on_hold)
+		elapsed += 0.04 + off_hold + on_hold
 	_flicker.tween_property(light_target, "energy", (0.0 if dying else base_energy), 0.25)
 	
 # LOSE: a black panel sweeps top -> down, covering vision like a sack pulled

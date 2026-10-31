@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://dxrrccsnjtac5" path="res://card/card_back_black.png" id="1_fjcud"]
 [ext_resource type="Shader" uid="uid://ba60jlmxluoai" path="res://card/shaders/perspective.gdshader" id="1_trrkg"]
 [ext_resource type="Script" uid="uid://dfn45mye4rqyc" path="res://card/card.gd" id="3_ply2h"]
+[ext_resource type="Shader" uid="uid://bvjhmt7cm0hou" path="res://chips/shader/liquid_text.gdshader" id="4_346uv"]
 [ext_resource type="FontFile" uid="uid://ypaao7bra87o" path="res://art/fontstyle/EBGaramond/EBGaramond12-Italic.ttf" id="4_fdnr0"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_trrkg"]
@@ -12,6 +13,19 @@ shader_parameter/cull_back = true
 shader_parameter/y_rot = 0.0
 shader_parameter/x_rot = 0.0
 shader_parameter/inset = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_i6okx"]
+shader = ExtResource("4_346uv")
+shader_parameter/cloud_dark = Color(0.70980394, 0.70980394, 0.70980394, 1)
+shader_parameter/cloud_mid = Color(0.9019608, 0.9019608, 0.9019608, 1)
+shader_parameter/cloud_light = Color(1, 1, 1, 1)
+shader_parameter/cloud_scale = 0.02
+shader_parameter/cloud_speed = 0.3
+shader_parameter/brightness = 1.15
+shader_parameter/bob_amp = 6.0
+shader_parameter/bob_speed = 3.0
+shader_parameter/bob_spread = 0.012
+shader_parameter/highlight_strength = 0.0
 
 [node name="Card" type="Sprite2D" unique_id=1589171735]
 material = SubResource("ShaderMaterial_trrkg")
@@ -27,6 +41,7 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="Label" type="Label" parent="QuestionMarkUI" unique_id=1532257283]
+material = SubResource("ShaderMaterial_i6okx")
 layout_mode = 0
 offset_left = 392.00003
 offset_top = 11.0
@@ -34,18 +49,29 @@ offset_right = 432.00003
 offset_bottom = 140.0
 rotation = 0.07853982
 scale = Vector2(1.5, 1.5)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 0.2509804)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/outline_size = 16
+theme_override_constants/shadow_outline_size = 40
 theme_override_fonts/font = ExtResource("4_fdnr0")
-theme_override_font_sizes/font_size = 128
+theme_override_font_sizes/font_size = 200
 text = "?"
 
-[node name="Label2" type="Label" parent="QuestionMarkUI" unique_id=1761726481]
+[node name="Label3" type="Label" parent="QuestionMarkUI" unique_id=572890523]
+material = SubResource("ShaderMaterial_i6okx")
 layout_mode = 0
 offset_left = -518.0
 offset_top = -275.0
-offset_right = -478.0
-offset_bottom = -146.0
+offset_right = -455.0
+offset_bottom = -75.0
 rotation = -0.37524578
 scale = Vector2(1.5, 1.5)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 0.2509804)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/outline_size = 16
+theme_override_constants/shadow_outline_size = 40
 theme_override_fonts/font = ExtResource("4_fdnr0")
-theme_override_font_sizes/font_size = 128
+theme_override_font_sizes/font_size = 200
 text = "?"

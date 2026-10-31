@@ -43,6 +43,16 @@ var _checks_in_row := 0
 const LIE_PENALTY := 6
 var player_aggression := 0.3
 
+const DAY_SUBTITLES := [
+	"PRIDE",
+	"ENVY",
+	"WRATH",
+	"SLOTH",
+	"GREED",
+	"GLUTTONY",
+	"LUST",
+]
+
 
 func _ready() -> void:
 	card_spawn_point = marker.get_node("CardSpawnMark").global_position
@@ -70,7 +80,7 @@ func start_game() -> void:
 	_begin_match()
 
 func _begin_match() -> void:
-	await ScreenFx.day_card(day, "A FRESH HAND")
+	await ScreenFx.day_card(day, DAY_SUBTITLES[day - 1] if day <= DAY_SUBTITLES.size() else "LIMBO")
 	ANTE = 1
 	pot = 0
 	player_aggression = 0.3
@@ -281,7 +291,9 @@ func _advance_day() -> void:
 	_record_day()
 	ScreenFx.blood_flash(0.6, Color("d9b45c"))   # gold "you survived" flash
 	await ScreenFx.blink(2)
+	await get_tree().create_timer(1.0).timeout   # let the eyes settle before the day card
 	await _begin_match()
+
 func _send_to_pot(is_player: bool, amount: int) -> void:
 	if amount <= 0:
 		return
@@ -463,7 +475,7 @@ func _deathmatch() -> void:
 			deck.get_card_texture_path(opponent_card_number))
 		await player_card.reveal_to_forehead(card_player_point,
 			player_card.TransformPreset.PLAYERREVEAL,
-			deck.get_card_texture_path(player_card_number))
+			deck.get_card_texture_path(player_card_number), false)
 		ScreenFx.shake(12.0, 0.25)
 
 		var p_rank: int = deck.get_rank(player_card_number)
