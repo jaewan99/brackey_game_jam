@@ -9,6 +9,11 @@
 #https://pixabay.com/sound-effects/household-table-slam-open-fist-98796/
 #https://pixabay.com/sound-effects/film-special-effects-wood-step-sample-1-47664/
 #https://pixabay.com/sound-effects/household-pushing-chair-96107/
+#https://pixabay.com/sound-effects/technology-small-film-projector-26188/
+#"Vibing over venus" Kevin MacLeod (incompetech.com)
+#Licensed under Creative Commons: By Attribution 4.0 License
+#http://creativecommons.org/licenses/by/4.0/
+
 
 # --- for the other project - (try this out)
 #https://opengameart.org/content/spacelife-14
