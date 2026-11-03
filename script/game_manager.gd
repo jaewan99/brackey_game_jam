@@ -62,6 +62,7 @@ func _ready() -> void:
 	ScreenFx.shake_target = $Camera2D
 	ScreenFx.light_target = $PointLight2D
 	_load_best_day()
+	Music.play_bgm(Music.BGM_MAIN_MENU)
 
 # --- set up-----
 var opponent_controller = SeatController
@@ -74,6 +75,7 @@ func _setup_controller() -> void:
 
 # --- start game ---
 func start_game() -> void:
+	Music.play_bgm(Music.BGM_TABLE)
 	ui.set_state(ui.UIState.NONE)
 	day = 1
 	_setup_controller()
@@ -87,6 +89,7 @@ func _begin_match() -> void:
 	opponent_controller.brain.reset_memory()   # each day is a new stranger
 	_apply_day_difficulty()
 	await _distribute_starting_chips()
+	await Music.play_and_await_sfx(Music.DECK_SHUFFLE)
 	set_round()
 	
 	
@@ -281,6 +284,7 @@ func _next_round() -> void:
 
 # --- aux
 func _end_run() -> void:
+	Music.stop_bgm(0.8)
 	ScreenFx.blood_flash(0.85, Color("8a0000"))  # red loss
 	await ScreenFx.sack_drop()
 	await _reset_game_and_return_to_main()
@@ -380,6 +384,7 @@ func _reset_game_and_return_to_main() -> void:
 	opponent_tell = -1
 	# optional "proper ending" card: shown over the sack before returning
 	await ScreenFx.day_card(day, "YOU DID NOT SURVIVE   ·   BEST: DAY %d" % best_day, 2.0, false)
+	Music.play_bgm(Music.BGM_MAIN_MENU, 2.0)
 	day = 1
 	ui.set_state(ui.UIState.MAIN_MENU)
 
@@ -500,6 +505,7 @@ func _pay_pot(winner) -> void:
 			print("player wins")
 		Turn.OPPONENT:
 			ScreenFx.blood_flash(0.85, Color("8a0000"))
+			Music.play_sfx(Music.IMPACT, -6.0)
 			pot = 0
 			opponent_chips += amount
 			await ui.send_chips(ui.pot_coin, ui.opponent_coin, amount)

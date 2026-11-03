@@ -96,12 +96,17 @@ func start_heartbeat(color := Color(0.85, 0.85, 0.85), speed := 1.0, intensity :
 	var mid := 0.14 * intensity
 	var dub := 0.38 * intensity
 	var lo := 0.06 * intensity
+	# faint at low tension, strong when racing (set_tension gives intensity 0.5 .. 1.0)
+	var vol := lerpf(4.0, 14.0, clampf((intensity - 0.5) / 0.5, 0.0, 1.0))
 	_heart = create_tween().set_loops()
-	_heart.tween_method(_set_strength, lo,  hi,  0.11 / speed)   # lub
-	_heart.tween_method(_set_strength, hi,  mid, 0.16 / speed)
-	_heart.tween_method(_set_strength, mid, dub, 0.09 / speed)   # dub
-	_heart.tween_method(_set_strength, dub, lo,  0.20 / speed)
-	_heart.tween_interval(0.55 / speed)
+	_heart.tween_callback(func(): Music.play_sfx(Music.HEARTBEAT, vol, 1.0, Music.HEARTBEAT_START))
+	# lub-dub stays a fixed length so it matches the sound
+	_heart.tween_method(_set_strength, lo,  hi,  0.11)   # lub
+	_heart.tween_method(_set_strength, hi,  mid, 0.17)
+	_heart.tween_method(_set_strength, mid, dub, 0.09)   # dub
+	_heart.tween_method(_set_strength, dub, lo,  0.20)
+	# only the rest between beats shrinks: ~45 bpm calm -> ~90 bpm racing
+	_heart.tween_interval(maxf(0.05, 0.8 / speed - 0.25))
 
 func set_tension(t: float) -> void:
 	t = clamp(t, 0.0, 1.0)

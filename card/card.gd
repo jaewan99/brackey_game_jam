@@ -59,6 +59,7 @@ func _ready() -> void:
 func send_card_to(spawn_point: Vector2, preset: TransformPreset):
 	var card_transform_data: Dictionary = TRANSFORM_PRESETS[preset]
 	var actual_duration = randf_range(0.8, 1.2)
+	Music.play_sfx(Music.CARD_SLIDE)
 	var tween = create_tween()
 	tween.set_parallel(true)
 	tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
@@ -90,8 +91,10 @@ func reveal_to_forehead(target_position: Vector2, preset: TransformPreset, card_
 		is_player = false
 
 	# flip: scale.x collapses to 0 then expands to target scale.x, texture swaps at the midpoint
-	tween.tween_property(self, "scale:y", 0.0, flip_point).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-	tween.chain().tween_callback(func(): texture = load(card_texture_path))
+	tween.tween_property(self, "scale:y", 0.0, flip_point).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)	
+	tween.chain().tween_callback(func():
+		texture = load(card_texture_path)
+		Music.play_sfx(Music.CARD_FLIP))
 	tween.chain().tween_property(self, "scale:y", card_transform_data["scale"].y, duration - flip_point).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	if is_player and show_question:
 		tween.chain().tween_callback(func(): question_ui.visible = true)
@@ -125,7 +128,7 @@ func burn(duration: float = 0.9) -> void:
 	if question_ui.visible:
 		question_ui.visible = false
 	material = mat
-
+	Music.play_sfx(Music.CARD_BURN)
 	var tween := create_tween()
 	tween.tween_method(
 		func(v: float): mat.set_shader_parameter("dissolve_value", v),
