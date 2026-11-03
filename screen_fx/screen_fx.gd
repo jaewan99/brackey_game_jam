@@ -26,6 +26,8 @@ var _sack: ColorRect
 # grain
 var _grain: ColorRect
 
+var _buzz: AudioStreamPlayer            # next to: var _flicker: Tween
+
 func _ready() -> void:
 	layer = 100                 # draw above the game
 	vignette = ColorRect.new()
@@ -166,8 +168,11 @@ func flicker_light(base_energy := 1.0, duration := 1.6, dying := false) -> void:
 		return
 	if _flicker and _flicker.is_running():
 		_flicker.kill()
-	var buzz := Music.play_sfx(Music.LIGHT_FLICKER, -4.0, 1.0, 0.5)   # skip 0.5s lead-in
+	Music.fade_out(_buzz, 0.1)                                         # stop a previous buzz
+	_buzz = Music.play_sfx(Music.LIGHT_FLICKER, -4.0, 1.0, 0.5)
+	var buzz := _buzz
 	_flicker = create_tween()
+
 	var elapsed := 0.0
 	while elapsed < duration:
 		# off: snap down, hold dark
@@ -281,11 +286,13 @@ func day_card(n: int, subtitle := "", hold := 1.4, backdrop := true) -> void:
 		fl.tween_property(weave, "position:y", randf_range(-1.5, 1.5), step)
 		elapsed += step
 	await fl.finished
-
+	
+	Music.fade_out(whirr, 0.35)
+	
 	var tout := create_tween()
 	tout.tween_property(root, "modulate:a", 0.0, 0.35).set_ease(Tween.EASE_IN)
 	await tout.finished
 	
-	Music.fade_out(whirr, 0.35)
+	
 
 	root.queue_free()
