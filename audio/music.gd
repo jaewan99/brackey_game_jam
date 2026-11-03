@@ -18,6 +18,17 @@ const HEARTBEAT       := preload("res://audio/sfx/outcome_tension/heartbeat.mp3"
 const HEARTBEAT_START := 0.2     
 const IMPACT          := preload("res://audio/sfx/outcome_tension/impact.mp3")
 
+# screen effects / transitions
+const SACK_OVER_HEAD := preload("res://audio/sfx/screen_effects_transition/sack-over-head.mp3")
+const DEEP_BREATH    := preload("res://audio/sfx/screen_effects_transition/deep-breath.mp3")
+const LIGHT_FLICKER  := preload("res://audio/sfx/screen_effects_transition/light-flicker.mp3")
+const BREATHING_FAST := preload("res://audio/sfx/screen_effects_transition/breathing-fast.mp3")
+const FILM_FLUTTER   := preload("res://audio/sfx/screen_effects_transition/flim-flutter.mp3")
+
+# ui
+const BUTTON_HOVER := preload("res://audio/sfx/ui_actions/buttons/button-hover.mp3")
+const BUTTON_CLICK := preload("res://audio/sfx/ui_actions/buttons/button-click.mp3")
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	
@@ -62,3 +73,13 @@ func stop_bgm(fade := 1.5) -> void:
 		t.tween_property(_bgm, "volume_db", -60.0, fade)
 		t.tween_callback(_bgm.queue_free)
 		_bgm = null
+
+# fade a playing sfx out early (for long files like the 60s film flutter)
+func fade_out(p: AudioStreamPlayer, time := 0.4) -> void:
+	if not is_instance_valid(p):
+		return
+	var t := create_tween()
+	t.tween_property(p, "volume_db", -60.0, time)
+	t.tween_callback(func():
+		if is_instance_valid(p):
+			p.queue_free())

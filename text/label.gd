@@ -78,6 +78,7 @@ func _process(_delta: float) -> void:
 func _on_mouse_entered() -> void:
 	if not is_hoverable:
 		return
+	Music.play_sfx(Music.BUTTON_HOVER, -10.0)
 	is_hovering = true
 	var tween = create_tween()
 	tween.tween_method(_set_highlight, mat.get_shader_parameter("highlight_strength"), 0.7, 0.15)
@@ -94,6 +95,7 @@ func _set_highlight(value: float) -> void:
 
 
 func _handle_input() -> void:
+	Music.play_sfx(Music.BUTTON_CLICK, -4.0, 1.0, 0.05)
 	disabled = true
 	match label.text:
 		"START":

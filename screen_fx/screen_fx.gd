@@ -138,6 +138,7 @@ func shake(amount := 10.0, duration := 0.25) -> void:
 # WIN: eyes blink a couple of times (waking / adjusting to the light) while
 # the hanging light sways. Ends with eyes open.
 func blink(times := 2, close_time := 0.12, hold := 0.05, flicker := true) -> void:
+	Music.play_sfx(Music.DEEP_BREATH, -2.0, 1.0, 0.45)   # inhale → exhale, the rest is silence
 	var half := get_viewport().get_visible_rect().size.y * 0.5
 	_eye_top.visible = true
 	_eye_bottom.visible = true
@@ -165,6 +166,7 @@ func flicker_light(base_energy := 1.0, duration := 1.6, dying := false) -> void:
 		return
 	if _flicker and _flicker.is_running():
 		_flicker.kill()
+	var buzz := Music.play_sfx(Music.LIGHT_FLICKER, -4.0, 1.0, 0.5)   # skip 0.5s lead-in
 	_flicker = create_tween()
 	var elapsed := 0.0
 	while elapsed < duration:
@@ -180,10 +182,11 @@ func flicker_light(base_energy := 1.0, duration := 1.6, dying := false) -> void:
 		_flicker.tween_interval(on_hold)
 		elapsed += 0.04 + off_hold + on_hold
 	_flicker.tween_property(light_target, "energy", (0.0 if dying else base_energy), 0.25)
-	
+	_flicker.tween_callback(func(): Music.fade_out(buzz, 0.25))
 # LOSE: a black panel sweeps top -> down, covering vision like a sack pulled
 # over the head. Leaves the screen fully covered.
 func sack_drop(duration := 0.9, color := Color.BLACK, settle := true) -> void:
+	Music.play_sfx(Music.SACK_OVER_HEAD)
 	var h := get_viewport().get_visible_rect().size.y
 	_sack.color = color
 	_sack.offset_bottom = 0.0
@@ -212,6 +215,10 @@ func day_card(n: int, subtitle := "", hold := 1.4, backdrop := true) -> void:
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
+	
+	var whirr: AudioStreamPlayer = null
+	if backdrop:
+		whirr = Music.play_sfx(Music.FILM_FLUTTER, -8.0, 1.0, 0.2)
 
 	# plain black backdrop again
 	if backdrop:
@@ -279,5 +286,6 @@ func day_card(n: int, subtitle := "", hold := 1.4, backdrop := true) -> void:
 	tout.tween_property(root, "modulate:a", 0.0, 0.35).set_ease(Tween.EASE_IN)
 	await tout.finished
 	
+	Music.fade_out(whirr, 0.35)
 
 	root.queue_free()

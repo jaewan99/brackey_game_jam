@@ -89,6 +89,7 @@ func _begin_match() -> void:
 	opponent_controller.brain.reset_memory()   # each day is a new stranger
 	_apply_day_difficulty()
 	await _distribute_starting_chips()
+	#ScreenFx.flicker_light(1.0, 0.8) 
 	await Music.play_and_await_sfx(Music.DECK_SHUFFLE)
 	set_round()
 	
@@ -285,9 +286,11 @@ func _next_round() -> void:
 # --- aux
 func _end_run() -> void:
 	Music.stop_bgm(0.8)
-	ScreenFx.blood_flash(0.85, Color("8a0000"))  # red loss
+	ScreenFx.blood_flash(0.85, Color("8a0000"))
 	await ScreenFx.sack_drop()
+	var breath := Music.play_sfx(Music.BREATHING_FAST, -4.0, 1.0, 0.3)
 	await _reset_game_and_return_to_main()
+	Music.fade_out(breath, 0.8)          # breathing fades as the sack lifts
 	await ScreenFx.sack_clear(0.8)
 
 func _advance_day() -> void:
