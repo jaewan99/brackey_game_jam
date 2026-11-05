@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://bfwoh18e8ss38"]
+
+[ext_resource type="Script" uid="uid://d3xvw8hip4eph" path="res://enemy/opponent.gd" id="1_w0r0f"]
+[ext_resource type="Texture2D" uid="uid://cksh0buj7bepi" path="res://enemy/images/walk-1.png" id="2_pkd70"]
+[ext_resource type="Texture2D" uid="uid://b07waqkgrjj0e" path="res://enemy/images/walk-2.png" id="3_mrvet"]
+
+[node name="Opponent" type="Node2D" unique_id=662553964]
+script = ExtResource("1_w0r0f")
+walk_frames = Array[Texture2D]([ExtResource("2_pkd70"), ExtResource("3_mrvet")])
+
+[node name="Visual" type="CanvasGroup" parent="." unique_id=320598705]
+
+[node name="Walk" type="Sprite2D" parent="Visual" unique_id=761465994]
+position = Vector2(91.666664, 681.6666)
+
+[node name="WalkMarks" type="Node2D" parent="." unique_id=1511651560]
+
+[node name="Walk1" type="Marker2D" parent="WalkMarks" unique_id=1634569714]
+position = Vector2(331, 310)
+
+[node name="Walk2" type="Marker2D" parent="WalkMarks" unique_id=1545678245]
+position = Vector2(560, 310)

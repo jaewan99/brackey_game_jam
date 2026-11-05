@@ -27,6 +27,7 @@ var best_day := 1
 
 @onready var deck: Node = %Deck
 @onready var ui = %UI
+@onready var opponent: Opponent = $Opponent
 var shake_target: Node          # assigned from game_manager at runtime
 # markers
 @onready var marker = $Marker
@@ -83,6 +84,7 @@ func start_game() -> void:
 
 func _begin_match() -> void:
 	await ScreenFx.day_card(day, DAY_SUBTITLES[day - 1] if day <= DAY_SUBTITLES.size() else "LIMBO")
+	await opponent.enter()
 	ANTE = 1
 	pot = 0
 	player_aggression = 0.3
@@ -288,7 +290,7 @@ func _end_run() -> void:
 	Music.stop_bgm(0.8)
 	ScreenFx.blood_flash(0.85, Color("8a0000"))
 	await ScreenFx.sack_drop()
-	var breath := Music.play_sfx(Music.BREATHING_FAST, -4.0, 1.0, 0.3)
+	var breath: AudioStreamPlayer = Music.play_sfx(Music.BREATHING_FAST, -4.0, 1.0, 0.3)
 	await _reset_game_and_return_to_main()
 	Music.fade_out(breath, 0.8)          # breathing fades as the sack lifts
 	await ScreenFx.sack_clear(0.8)

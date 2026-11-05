@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://bmjpcv5ow3jjl" path="res://art/deal/chair.png" id="6_uclpb"]
 [ext_resource type="Texture2D" uid="uid://b6gutn7f6jm8f" path="res://art/shader/shadow_2.png" id="7_m10kg"]
 [ext_resource type="Texture2D" uid="uid://dclk0e3axinb2" path="res://art/dust.png" id="8_jht16"]
+[ext_resource type="PackedScene" uid="uid://bfwoh18e8ss38" path="res://enemy/opponent.tscn" id="9_holqj"]
 [ext_resource type="PackedScene" uid="uid://ckevvqih58ul4" path="res://text/text.tscn" id="9_x3qnp"]
 [ext_resource type="Shader" uid="uid://ba60jlmxluoai" path="res://card/shaders/perspective.gdshader" id="11_0opuu"]
 [ext_resource type="Script" uid="uid://dakwh74w1b2v0" path="res://script/ui_manager.gd" id="11_jht16"]
@@ -108,16 +109,21 @@ z_index = -127
 position = Vector2(960, 540)
 texture = ExtResource("4_efk6m")
 
+[node name="ChairWood" type="Sprite2D" parent="." unique_id=1351924544]
+z_index = -127
+position = Vector2(960, 419)
+texture = ExtResource("6_uclpb")
+
+[node name="Opponent" parent="." unique_id=662553964 instance=ExtResource("9_holqj")]
+unique_name_in_owner = true
+z_index = -127
+scale = Vector2(1.4, 1.4)
+
 [node name="TableFinal" type="Sprite2D" parent="." unique_id=249701963]
 z_index = -127
 position = Vector2(1069, 398.00003)
 scale = Vector2(0.9458333, 0.6800003)
 texture = ExtResource("5_0opuu")
-
-[node name="ChairWood" type="Sprite2D" parent="." unique_id=1351924544]
-z_index = -127
-position = Vector2(960, 419)
-texture = ExtResource("6_uclpb")
 
 [node name="AffectedUI" type="Control" parent="." unique_id=442462557]
 layout_mode = 3
