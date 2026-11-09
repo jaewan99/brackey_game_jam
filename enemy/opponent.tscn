@@ -3,6 +3,26 @@
 [ext_resource type="Script" uid="uid://d3xvw8hip4eph" path="res://enemy/opponent.gd" id="1_w0r0f"]
 [ext_resource type="Texture2D" uid="uid://cksh0buj7bepi" path="res://enemy/images/walk-1.png" id="2_pkd70"]
 [ext_resource type="Texture2D" uid="uid://b07waqkgrjj0e" path="res://enemy/images/walk-2.png" id="3_mrvet"]
+[ext_resource type="Texture2D" uid="uid://cmy3amphixw2l" path="res://enemy/images/sit-base.png" id="4_16c18"]
+[ext_resource type="Texture2D" uid="uid://dlob6g3thecbm" path="res://enemy/images/sit-mid.png" id="5_8qkpu"]
+[ext_resource type="Texture2D" uid="uid://btelm7roo8rrn" path="res://enemy/images/sit-raise.png" id="6_yd6xs"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_oroq7"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_16c18")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_8qkpu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_yd6xs")
+}],
+"loop": 0,
+"name": &"raise",
+"speed": 4.0
+}]
 
 [node name="Opponent" type="Node2D" unique_id=662553964]
 script = ExtResource("1_w0r0f")
@@ -13,10 +33,17 @@ walk_frames = Array[Texture2D]([ExtResource("2_pkd70"), ExtResource("3_mrvet")])
 [node name="Walk" type="Sprite2D" parent="Visual" unique_id=761465994]
 position = Vector2(91.666664, 681.6666)
 
+[node name="Sit" type="AnimatedSprite2D" parent="Visual" unique_id=2100172881]
+position = Vector2(683.205, 360)
+sprite_frames = SubResource("SpriteFrames_oroq7")
+animation = &"raise"
+frame = 1
+frame_progress = 1.0
+
 [node name="WalkMarks" type="Node2D" parent="." unique_id=1511651560]
 
 [node name="Walk1" type="Marker2D" parent="WalkMarks" unique_id=1634569714]
 position = Vector2(331, 310)
 
 [node name="Walk2" type="Marker2D" parent="WalkMarks" unique_id=1545678245]
-position = Vector2(560, 310)
+position = Vector2(507.103, 310)

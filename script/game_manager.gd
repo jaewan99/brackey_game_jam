@@ -35,6 +35,7 @@ var card_spawn_point :Vector2
 var card_player_point :Vector2
 var card_opponent_point :Vector2
 var card_opponent_reveal_point :Vector2
+var card_opponent_mid_point :Vector2
 
 var _folded_seat = null
 var _liar_seat = null
@@ -60,6 +61,7 @@ func _ready() -> void:
 	card_player_point = marker.get_node("CardPlayerMark").global_position
 	card_opponent_point = marker.get_node("CardOpponentMark").global_position
 	card_opponent_reveal_point = marker.get_node("CardOpponentRevealMark").global_position
+	card_opponent_mid_point= marker.get_node("CardOpponentMiddleRevealMark").global_position
 	ScreenFx.shake_target = $Camera2D
 	ScreenFx.light_target = $PointLight2D
 	_load_best_day()
@@ -137,8 +139,8 @@ func _draw_phase() -> void:
 		
 	# reveal the cards in their foreheads
 	await player_card.send_card_to(card_player_point, player_card.TransformPreset.PLAYERREVEAL)
-	await opponent_card.reveal_to_forehead(card_opponent_reveal_point, player_card.TransformPreset.OPPONENTREVEAL,deck.get_card_texture_path(opponent_card_number))
-	
+	opponent.raise_card()
+	await opponent_card.reveal_to_forehead(card_opponent_reveal_point, player_card.TransformPreset.OPPONENTREVEAL, deck.get_card_texture_path(opponent_card_number), true, card_opponent_mid_point)
 	# players pay for the start bet coins
 	await ui.send_chips(ui.player_coin, ui.pot_coin, player_ante)
 	await ui.send_chips(ui.opponent_coin, ui.pot_coin, opponent_ante)
@@ -271,6 +273,7 @@ func _cleanup_round() -> void:
 		await player_card.burn()
 	if is_instance_valid(opponent_card):
 		opponent_card.burn()
+		opponent.lower_card()
 	await get_tree().create_timer(0.6).timeout
 
 func _next_round() -> void:
@@ -296,6 +299,7 @@ func _end_run() -> void:
 	await ScreenFx.sack_clear(0.8)
 
 func _advance_day() -> void:
+	await opponent.leave()
 	day += 1
 	_record_day()
 	ScreenFx.blood_flash(0.6, Color("d9b45c"))   # gold "you survived" flash
@@ -392,6 +396,9 @@ func _reset_game_and_return_to_main() -> void:
 	Music.play_bgm(Music.BGM_MAIN_MENU, 2.0)
 	day = 1
 	ui.set_state(ui.UIState.MAIN_MENU)
+	if is_instance_valid(opponent_card): 
+		opponent_card.queue_free()
+	opponent.reset()
 
 # ----------------------- action decision - for the betting phase
 func _other(seat: Turn) -> Turn:

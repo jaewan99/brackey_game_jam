@@ -71,9 +71,9 @@ func send_card_to(spawn_point: Vector2, preset: TransformPreset):
 	material.set_shader_parameter("inset", card_transform_data["inset"])
 	await tween.finished
 
-func reveal_to_forehead(target_position: Vector2, preset: TransformPreset, card_texture_path: String, show_question := true) -> void:
+func reveal_to_forehead(target_position: Vector2, preset: TransformPreset, card_texture_path: String, show_question := true, mid_position := Vector2.INF) -> void:
 	var card_transform_data: Dictionary = TRANSFORM_PRESETS[preset]
-	var duration = randf_range(0.6, 0.9)
+	var duration := 0.75
 	var flip_point = duration * 0.5  # texture swaps at the midpoint of the whole move
 
 	var tween = create_tween()
@@ -81,7 +81,13 @@ func reveal_to_forehead(target_position: Vector2, preset: TransformPreset, card_
 	tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 	# move + rotate + shader perspective, same as send_card_to
-	tween.tween_property(self, "position", target_position, duration)
+	if mid_position == Vector2.INF:
+		tween.tween_property(self, "position", target_position, duration)
+	else:
+		# two legs: reaches the mid mark exactly at the flip, then goes on to the forehead
+		var path := create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		path.tween_property(self, "position", mid_position, flip_point)
+		path.tween_property(self, "position", target_position, duration - flip_point)
 	tween.tween_property(self, "rotation", card_transform_data["target_rotation"], duration)
 	tween.tween_method(_set_x_rot, material.get_shader_parameter("x_rot"), card_transform_data["x_rot"], duration)
 	tween.tween_method(_set_y_rot, material.get_shader_parameter("y_rot"), card_transform_data["y_rot"], duration)
