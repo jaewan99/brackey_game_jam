@@ -42,7 +42,7 @@ const LINES := {
 		"They say you hold the %s. They might be lying.",
 		"They say you hold the %s. Believe it if you like.",
 	],
-	"you_say": ["You tell them they hold the %s.", "You say: you hold the %s."],
+	"you_say": ["You tell them they hold the %s."],
 }
 
 var _line := ""                 # current dealer line ("" once it has expired)
