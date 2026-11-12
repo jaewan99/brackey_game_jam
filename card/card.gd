@@ -7,7 +7,7 @@ enum TransformPreset { START, PLAYER, OPPONENT, PLAYERREVEAL, OPPONENTREVEAL}
 @onready var question_ui: Control = $QuestionMarkUI
 
 const BURN_SHADER := preload("res://card/shaders/card_burn.gdshader")
-
+var _claim: Sprite2D            # the "claimed" card shown on top of this one (only after a lie)
 const TRANSFORM_PRESETS := {
 	TransformPreset.START: {
 		"scale": Vector2(0.195, 0.26),
@@ -118,6 +118,8 @@ func _set_inset(value: float) -> void:
 	material.set_shader_parameter("inset", value)
 
 func burn(duration: float = 0.9) -> void:
+	if is_instance_valid(_claim):
+		_claim.queue_free()
 	var noise := FastNoiseLite.new()
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH   # author's recommendation
 	var noise_tex := NoiseTexture2D.new()
@@ -141,3 +143,28 @@ func burn(duration: float = 0.9) -> void:
 		1.0, 0.0, duration)                                # 1 → 0 dissolves away
 	await tween.finished
 	queue_free()
+
+# the player lied about this card: dim the real face and put the claimed card in front, tilted
+func show_claim(card_texture_path: String) -> void:
+	_claim = Sprite2D.new()
+	_claim.texture = load(card_texture_path)
+	_claim.position = texture.get_size() * Vector2(0.18, 0.07)   # nudged so the real card peeks out
+	_claim.rotation_degrees = 9.0
+	_claim.modulate = Color(1.35, 1.35, 1.35, 0.0)               # above 1 = brighter; alpha starts at 0
+	add_child(_claim)
+	Music.play_sfx(Music.CARD_FLIP)
+	var t := create_tween().set_parallel(true)
+	t.tween_property(self, "self_modulate:a", 0.15, 0.3)         # self_modulate: dims this card, not the claim
+	t.tween_property(_claim, "modulate:a", 1.0, 0.3)
+	await t.finished
+
+# take the claim away and show the real card again (for the reveal)
+func hide_claim() -> void:
+	if not is_instance_valid(_claim):
+		return
+	var t := create_tween().set_parallel(true)
+	t.tween_property(self, "self_modulate:a", 1.0, 0.3)
+	t.tween_property(_claim, "modulate:a", 0.0, 0.3)
+	await t.finished
+	if is_instance_valid(_claim):
+		_claim.queue_free()

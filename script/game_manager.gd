@@ -158,12 +158,18 @@ func tell_truth() -> void:
 	_finish_tell_phase()
 func tell_lie() -> void:
 	player_tell = deck.get_random_card_excluding(opponent_card_number)
+	while deck.get_rank(player_tell) == deck.get_rank(opponent_card_number):
+		player_tell = deck.get_random_card_excluding(opponent_card_number)
 	_opponent_tell()
 	_finish_tell_phase()
 func _opponent_tell() -> void:
 	opponent_tell = opponent_controller.brain.choose_tell(player_card_number, opponent_lie_chance)
 func _finish_tell_phase() -> void:
 	ui.set_state(ui.UIState.NONE)
+	ui.caption.say("you_say", deck.RANK_NAMES[deck.get_rank(player_tell)])
+	if _seat_lied(Turn.PLAYER):
+		await opponent_card.show_claim(deck.get_card_texture_path(player_tell))
+	await get_tree().create_timer(0.7).timeout
 	await player_card.reveal_to_forehead(card_player_point, player_card.TransformPreset.PLAYERREVEAL,deck.get_card_texture_path(opponent_tell))
 	ui.caption.say("they_say", deck.RANK_NAMES[deck.get_rank(opponent_tell)])
 	await get_tree().create_timer(1.8).timeout         # time to read it before betting opens
@@ -254,6 +260,8 @@ func _commit(is_player: bool, amount:int) -> int:
 	return amount
 #------------------------------------------------- open phase
 func _open_phase() -> void:
+	if is_instance_valid(opponent_card):
+		opponent_card.hide_claim()
 	ScreenFx.set_tension(0.0)
 	ui.set_state(ui.UIState.NONE)
 	
@@ -370,9 +378,9 @@ func _bet_over(action: Action.Type) -> bool:
 
 func _seat_lied(teller: Turn) -> bool:
 	if teller == Turn.PLAYER:
-		return player_tell != opponent_card_number
+		return deck.get_rank(player_tell) != deck.get_rank(opponent_card_number)
 	else:
-		return opponent_tell != player_card_number
+		return deck.get_rank(opponent_tell) != deck.get_rank(player_card_number)
 
 func _pot_tension() -> float:
 	var total := player_chips + opponent_chips + pot
