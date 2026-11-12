@@ -189,20 +189,21 @@ func _betting_phase() -> void:
 		var legal := _legal_actions(seat)
 		ui.update_action_visibility(seat == Turn.PLAYER, legal)
 		if seat == Turn.OPPONENT:
-			await ui.caption.wait_voice()           # let "They fold." finish
+			await get_tree().create_timer(randf_range(0.9, 1.7)).timeout   # thinking
 		var ctrl = player_controller if seat == Turn.PLAYER else opponent_controller
 		var action = await ctrl.request_action(_build_view(seat))
-		ui.update_action_visibility(false, [])
+		ui.update_action_visibility(false, [])       # choice made: buttons go away while it plays out
 		if action not in legal:
 			action = _fallback(legal)
 		await apply_action(seat, action)
-		await ui.caption.wait_voice()           # let "They fold." finish
+		if seat == Turn.OPPONENT:
+			await ui.caption.wait_voice()            # hear their move before your buttons return
 		await get_tree().create_timer(0.3).timeout
 		ScreenFx.set_tension(_pot_tension())
 		if _bet_over(action):
 			break
 		seat = _other(seat)
-	ui.update_action_visibility(false, [])
+	ui.update_action_visibility(false, [])           # also covers betting skipped by an all-in
 		
 func apply_action(seat: Turn, action: Action.Type) -> void:
 	var is_player := seat == Turn.PLAYER
@@ -210,7 +211,9 @@ func apply_action(seat: Turn, action: Action.Type) -> void:
 		Action.Type.FOLD: "fold", Action.Type.CHECK: "check", Action.Type.CALL: "call",
 		Action.Type.RAISE: "raise", Action.Type.ALLIN: "allin", Action.Type.LIAR: "liar",
 	}
+	await ui.caption.wait_voice(0.1)        # don't talk over the previous line
 	ui.caption.say(("player_" if is_player else "opp_") + ACTION_KEYS[action], BET_UNIT)
+	
 	# moving average: recent actions count more, old ones fade
 	if is_player and action != Action.Type.LIAR:
 		var hit := 1.0 if action == Action.Type.RAISE or action == Action.Type.ALLIN else 0.0
@@ -261,6 +264,7 @@ func _open_phase() -> void:
 	ScreenFx.shake(8.0, 0.2)
 	opponent_controller.brain.observe_hand(not _seat_lied(Turn.PLAYER)) # learns the player hand
 	var winner = _resolve_winner()
+	await ui.caption.wait_voice(0.1)        # let "You fold." finish before the result
 	ui.caption.say(_outcome_key(winner))
 	_pay_pot(winner) # no await: starts flying
 	await _settle_lie_penalty()            # penalty flies at the same time

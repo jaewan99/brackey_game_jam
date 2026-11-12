@@ -3,7 +3,7 @@ extends RichTextLabel
 const VOICE_DIR := "res://audio/dealer/"
 const VOICE_DB := -8.0
 # shown as text but not spoken (routine lines get tiring fast). Edit freely.
-const TEXT_ONLY := ["player_check", "player_call", "opp_check", "opp_call", "shuffle"]
+const TEXT_ONLY := []
 
 const LINES := {
 	"day_1": ["Day one. Sit down.", "Welcome. Try to last."],
