@@ -5,6 +5,13 @@ const FONT := preload("res://art/fontstyle/EBGaramond/EBGaramond12-Italic.ttf")
 # bus name -> label shown to the player
 const BUSES := {"Master": "VOLUME", "BGM": "MUSIC", "SFX": "SOUND"}
 
+const BACK_BUTTON := preload("res://text/text.tscn")
+const BACK_GAP := 48.0            # space between the last slider and BACK
+
+var _box: VBoxContainer
+var _back: Button
+
+
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
@@ -19,20 +26,27 @@ func _ready() -> void:
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(center)
+	
+	_box = VBoxContainer.new()
+	_box.add_theme_constant_override("separation", 26)
+	center.add_child(_box)
 
-	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 26)
-	center.add_child(box)
-
-	box.add_child(_make_label("SETTINGS", 84, Color("e8d7a0")))
+	_box.add_child(_make_label("SETTINGS", 84, Color("e8d7a0")))
 
 	var cfg := ConfigFile.new()
 	cfg.load(SAVE_PATH)
 	for bus in BUSES:
 		var value := float(cfg.get_value("audio", bus, 1.0))
 		_apply(bus, value)                       # saved volumes take effect at startup
-		box.add_child(_make_row(bus, value))
-
+		_box.add_child(_make_row(bus, value))
+	# BACK: the same ink button as the rest of the game; label.gd handles the click
+	_back = BACK_BUTTON.instantiate()
+	_back.text = "BACK"
+	_back.anchor_right = 0.0
+	_back.anchor_bottom = 0.0
+	add_child(_back)
+	visibility_changed.connect(_place_back)
+	_place_back()
 func _make_label(t: String, size: int, color: Color) -> Label:
 	var l := Label.new()
 	l.text = t
@@ -77,3 +91,14 @@ func _save(bus: String, value: float) -> void:
 	cfg.load(SAVE_PATH)                          # keep best_day and the other volumes
 	cfg.set_value("audio", bus, value)
 	cfg.save(SAVE_PATH)
+
+# put BACK centred under the slider column (runs each time the menu is shown)
+func _place_back() -> void:
+	if not is_visible_in_tree():
+		return
+	await get_tree().process_frame               # let the column finish its layout first
+	_back.size = Vector2(300, 110)
+	_back.position = Vector2(
+		(size.x - _back.size.x) * 0.5,
+		_box.global_position.y - global_position.y + _box.size.y + BACK_GAP)
+	_back.base_y = _back.position.y              # label.gd's hover bob rests at this height

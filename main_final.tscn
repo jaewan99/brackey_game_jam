@@ -171,7 +171,6 @@ anchors_preset = 0
 offset_top = 2.0
 offset_right = 40.0
 offset_bottom = 42.0
-script = ExtResource("13_rigyf")
 
 [node name="Settings" parent="UI/MainMenuUI" unique_id=1191972217 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
@@ -208,8 +207,12 @@ offset_bottom = 40.0
 visible = false
 layout_mode = 3
 anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 845.0
+offset_top = 760.0
+offset_right = 885.0
+offset_bottom = 800.0
+tooltip_text = "BACK"
+script = ExtResource("13_rigyf")
 
 [node name="DealUI" type="Control" parent="UI" unique_id=1184642475]
 visible = false
