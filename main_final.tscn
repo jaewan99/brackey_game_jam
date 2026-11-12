@@ -20,6 +20,7 @@
 [ext_resource type="PackedScene" uid="uid://ddamdm11qakt" path="res://chips/chips.tscn" id="14_87ufc"]
 [ext_resource type="FontFile" uid="uid://c4lv6nd8vrnay" path="res://art/fontstyle/EBGaramond/EBGaramond12-Regular.ttf" id="14_holqj"]
 [ext_resource type="Texture2D" uid="uid://b5gsqgwrbul8l" path="res://card/cards/2_of_spades.png" id="16_jht16"]
+[ext_resource type="FontFile" uid="uid://ypaao7bra87o" path="res://art/fontstyle/EBGaramond/EBGaramond12-Italic.ttf" id="16_peq34"]
 [ext_resource type="PackedScene" uid="uid://blrmhvde07gbc" path="res://deck/deck.tscn" id="17_idb0s"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_imjiu"]
@@ -338,6 +339,28 @@ offset_top = 261.0
 offset_right = 1464.0
 offset_bottom = 390.0
 text = "LIE"
+
+[node name="CaptionUI" type="RichTextLabel" parent="UI" unique_id=208187304]
+custom_minimum_size = Vector2(1200, 0)
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -600.0
+offset_top = -100.0
+offset_right = 600.0
+offset_bottom = -59.999878
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.7882353, 0.7058824, 0.5137255, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/normal_font = ExtResource("16_peq34")
+theme_override_font_sizes/normal_font_size = 36
+bbcode_enabled = true
+fit_content = true
 
 [node name="PointLight2D" type="PointLight2D" parent="." unique_id=397553667]
 position = Vector2(960.00006, -43)
