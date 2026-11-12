@@ -24,6 +24,9 @@ var current_state: UIState
 @onready var allin: Button = $DealUI/ALLIN
 @onready var liar: Button = $DealUI/LIAR
 
+#Caption
+@onready var caption: RichTextLabel = $CaptionUI
+
 func _ready() -> void:
 	set_state(UIState.MAIN_MENU)
 	

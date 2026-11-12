@@ -79,22 +79,24 @@ func _on_mouse_entered() -> void:
 	if not is_hoverable:
 		return
 	Music.play_sfx(Music.BUTTON_HOVER, -10.0)
+	game_manager.ui.caption.hint(game_manager.action_hint(label.text))
 	is_hovering = true
 	var tween = create_tween()
 	tween.tween_method(_set_highlight, mat.get_shader_parameter("highlight_strength"), 0.7, 0.15)
 
-
 func _on_mouse_exited() -> void:
+	game_manager.ui.caption.clear_hint()
 	is_hovering = false
 	var tween = create_tween()
 	tween.tween_method(_set_highlight, mat.get_shader_parameter("highlight_strength"), 0.0, 0.25)
-
+	
 
 func _set_highlight(value: float) -> void:
 	mat.set_shader_parameter("highlight_strength", value)
 
 
 func _handle_input() -> void:
+	game_manager.ui.caption.clear_hint()
 	Music.play_sfx(Music.BUTTON_CLICK, -4.0, 1.0, 0.05)
 	disabled = true
 	match label.text:

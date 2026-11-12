@@ -125,6 +125,7 @@ func _ante_phase() -> void:
 
 
 func _draw_phase() -> void:
+	ui.caption.say("deal")
 	# get a card(int) from the deck
 	player_card_number = deck.draw_card()
 	opponent_card_number = deck.draw_card()
@@ -193,6 +194,11 @@ func _betting_phase() -> void:
 		
 func apply_action(seat: Turn, action: Action.Type) -> void:
 	var is_player := seat == Turn.PLAYER
+	const ACTION_KEYS := {
+		Action.Type.FOLD: "fold", Action.Type.CHECK: "check", Action.Type.CALL: "call",
+		Action.Type.RAISE: "raise", Action.Type.ALLIN: "allin", Action.Type.LIAR: "liar",
+	}
+	ui.caption.say(("player_" if is_player else "opp_") + ACTION_KEYS[action], BET_UNIT)
 	# moving average: recent actions count more, old ones fade
 	if is_player and action != Action.Type.LIAR:
 		var hit := 1.0 if action == Action.Type.RAISE or action == Action.Type.ALLIN else 0.0
@@ -242,7 +248,9 @@ func _open_phase() -> void:
 		deck.get_card_texture_path(player_card_number))
 	ScreenFx.shake(8.0, 0.2)
 	opponent_controller.brain.observe_hand(not _seat_lied(Turn.PLAYER)) # learns the player hand
-	_pay_pot(_resolve_winner())            # no await: starts flying
+	var winner = _resolve_winner()
+	ui.caption.say(_outcome_key(winner))
+	_pay_pot(winner) # no await: starts flying
 	await _settle_lie_penalty()            # penalty flies at the same time
 	await get_tree().create_timer(0.3).timeout   # let the pot finish landing
 	await _cleanup_round()
@@ -291,6 +299,7 @@ func _next_round() -> void:
 # --- aux
 func _end_run() -> void:
 	Music.stop_bgm(0.8)
+	ui.caption.say("dead")
 	ScreenFx.blood_flash(0.85, Color("8a0000"))
 	await ScreenFx.sack_drop()
 	var breath: AudioStreamPlayer = Music.play_sfx(Music.BREATHING_FAST, -4.0, 1.0, 0.3)
@@ -299,7 +308,9 @@ func _end_run() -> void:
 	await ScreenFx.sack_clear(0.8)
 
 func _advance_day() -> void:
+	ui.caption.say("day_survived")
 	await opponent.leave()
+	ui.caption.clear()
 	day += 1
 	_record_day()
 	ScreenFx.blood_flash(0.6, Color("d9b45c"))   # gold "you survived" flash
@@ -378,6 +389,7 @@ func _record_day() -> void:
 		_save_best_day()
 
 func _reset_game_and_return_to_main() -> void:
+	ui.caption.clear()
 	ScreenFx.set_tension(0.0)              # kill the heartbeat
 	ui.chips_ui.visible = false
 	pot = 0
@@ -497,9 +509,11 @@ func _deathmatch() -> void:
 		var p_rank: int = deck.get_rank(player_card_number)
 		var o_rank: int = deck.get_rank(opponent_card_number)
 		if p_rank == o_rank:
+			ui.caption.say("win_hand" if p_rank > o_rank else "lose_hand")
 			await _pay_pot(null)                   # grey flash, pot stays, go again
 			await _cleanup_round()
 			continue
+		ui.caption.say("win_hand" if p_rank > o_rank else "lose_hand")
 		await _pay_pot(Turn.PLAYER if p_rank > o_rank else Turn.OPPONENT)
 		await _cleanup_round()
 		ScreenFx.set_tension(0.0)
@@ -524,3 +538,40 @@ func _pay_pot(winner) -> void:
 		_:
 			ScreenFx.blood_flash(0.3, Color("8a8378"))   # tie: pot carries
 			print("Draw")
+
+# which dealer line describes how this hand ended
+func _outcome_key(winner) -> String:
+	if _liar_seat == Turn.PLAYER:
+		return "liar_right" if _seat_lied(Turn.OPPONENT) else "liar_wrong"
+	if _liar_seat == Turn.OPPONENT:
+		return "caught_lying" if _seat_lied(Turn.PLAYER) else "false_accused"
+	if _folded_seat == Turn.PLAYER:
+		return "fold_fooled" if _seat_lied(Turn.OPPONENT) else "lose_hand"
+	if _folded_seat == Turn.OPPONENT:
+		return "lie_worked" if _seat_lied(Turn.PLAYER) else "win_hand"
+	match winner:
+		Turn.PLAYER: return "win_hand"
+		Turn.OPPONENT: return "lose_hand"
+	return "tie"
+
+# hover text for a button, with the real numbers for this moment ("" = no hint)
+func action_hint(action: String) -> String:
+	match action:
+		"CHECK":
+			return "Check: pass without betting."
+		"CALL":
+			return "Call: pay %d to match." % mini(to_call, player_chips)
+		"RAISE":
+			var pay := mini(mini(to_call + BET_UNIT, to_call + opponent_chips), player_chips)
+			return "Raise: pay %d. They must match %d." % [pay, pay - to_call]
+		"ALL IN":
+			return "All in: bet %d." % mini(player_chips, to_call + opponent_chips)
+		"FOLD":
+			return "Fold: give up the pot of %d. Costs %d more if they lied." % [pot, LIE_PENALTY]
+		"LIAR":
+			return "Liar: win the pot and %d more if they lied. Lose both if not." % LIE_PENALTY
+		"TRUTH":
+			return "Truth: tell them their real card."
+		"LIE":
+			return "Lie: tell them a different card."
+	return ""
