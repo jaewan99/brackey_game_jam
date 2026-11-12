@@ -487,9 +487,8 @@ func _deathmatch() -> void:
 		await opponent_card.send_card_to(card_opponent_point, player_card.TransformPreset.OPPONENT)
 
 		# no tell phase: both real cards go face-up straight away
-		await opponent_card.reveal_to_forehead(card_opponent_reveal_point,
-			player_card.TransformPreset.OPPONENTREVEAL,
-			deck.get_card_texture_path(opponent_card_number))
+		opponent.raise_card()
+		await opponent_card.reveal_to_forehead(card_opponent_reveal_point, player_card.TransformPreset.OPPONENTREVEAL, deck.get_card_texture_path(opponent_card_number), true, card_opponent_mid_point)
 		await player_card.reveal_to_forehead(card_player_point,
 			player_card.TransformPreset.PLAYERREVEAL,
 			deck.get_card_texture_path(player_card_number), false)

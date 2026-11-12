@@ -5,9 +5,10 @@ extends Node2D
 @export var walk_frames: Array[Texture2D]
 @onready var walk_marks: Array[Node] = $WalkMarks.get_children()
 
-@onready var visual: CanvasGroup = $Visual
+@onready var visual: Node2D = $Visual
 @onready var walk: Sprite2D = $Visual/Walk
 @onready var sit: AnimatedSprite2D = $Visual/Sit
+
 
 func _ready() -> void:
 
@@ -20,10 +21,12 @@ func enter() -> void:
 		walk.texture = walk_frames[i]
 		walk.global_position = walk_marks[i].global_position
 		walk.modulate.a = 0.0
+		Music.play_sfx(Music.WOOD_STEP, -6.0 + i * 3.0 + randf_range(-1.0, 1.0), randf_range(0.85, 1.1))
 		await _fade(walk, 1.0, 0.35)
 		await get_tree().create_timer(0.5).timeout
 		await _fade(walk, 0.0, 0.35)
 	
+	Music.play_sfx(Music.WOOD_STEP, 0.0, randf_range(0.7, 0.8))
 	walk.visible = false
 	sit.animation = "raise"
 	sit.frame = 0

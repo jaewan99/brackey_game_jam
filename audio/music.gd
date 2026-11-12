@@ -29,6 +29,9 @@ const FILM_FLUTTER   := preload("res://audio/sfx/screen_effects_transition/flim-
 const BUTTON_HOVER := preload("res://audio/sfx/ui_actions/buttons/button-hover.mp3")
 const BUTTON_CLICK := preload("res://audio/sfx/ui_actions/buttons/button-click.mp3")
 
+# opponent
+const WOOD_STEP := preload("res://audio/sfx/opponent/wood-step.mp3")
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	

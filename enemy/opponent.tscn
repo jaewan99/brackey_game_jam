@@ -28,7 +28,7 @@ animations = [{
 script = ExtResource("1_w0r0f")
 walk_frames = Array[Texture2D]([ExtResource("2_pkd70"), ExtResource("3_mrvet")])
 
-[node name="Visual" type="CanvasGroup" parent="." unique_id=320598705]
+[node name="Visual" type="Node2D" parent="." unique_id=1025570528]
 
 [node name="Walk" type="Sprite2D" parent="Visual" unique_id=761465994]
 position = Vector2(91.666664, 681.6666)
