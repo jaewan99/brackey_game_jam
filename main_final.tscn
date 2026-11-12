@@ -17,6 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://bjhxkrvyuqk6r" path="res://card/card.tscn" id="11_uclpb"]
 [ext_resource type="Texture2D" uid="uid://d2bq54ppbtu7d" path="res://card/cards/2_of_clubs.png" id="13_0opuu"]
 [ext_resource type="Shader" uid="uid://byhqiah5x6rj7" path="res://text/text.gdshader" id="13_imjiu"]
+[ext_resource type="Script" uid="uid://cqd2uvgk63nse" path="res://script/settings_menu.gd" id="13_rigyf"]
 [ext_resource type="PackedScene" uid="uid://ddamdm11qakt" path="res://chips/chips.tscn" id="14_87ufc"]
 [ext_resource type="FontFile" uid="uid://c4lv6nd8vrnay" path="res://art/fontstyle/EBGaramond/EBGaramond12-Regular.ttf" id="14_holqj"]
 [ext_resource type="Texture2D" uid="uid://b5gsqgwrbul8l" path="res://card/cards/2_of_spades.png" id="16_jht16"]
@@ -170,6 +171,7 @@ anchors_preset = 0
 offset_top = 2.0
 offset_right = 40.0
 offset_bottom = 42.0
+script = ExtResource("13_rigyf")
 
 [node name="Settings" parent="UI/MainMenuUI" unique_id=1191972217 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
@@ -181,7 +183,7 @@ offset_top = 335.20193
 offset_right = 1814.0
 offset_bottom = 464.20193
 theme_override_font_sizes/font_size = 84
-text = "SETTING"
+text = "SETTINGS"
 
 [node name="Start" parent="UI/MainMenuUI" unique_id=1663608405 instance=ExtResource("9_x3qnp")]
 layout_mode = 0
@@ -294,6 +296,7 @@ theme_override_font_sizes/font_size = 84
 text = "LIAR"
 
 [node name="TruthLieUI" type="Control" parent="UI" unique_id=1898903494]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -324,9 +327,9 @@ layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 334.0
+offset_left = 426.0
 offset_top = 269.0
-offset_right = 803.0
+offset_right = 895.0
 offset_bottom = 406.0
 text = "TRUTH"
 

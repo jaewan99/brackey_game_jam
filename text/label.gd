@@ -103,7 +103,9 @@ func _handle_input() -> void:
 		"START":
 			await game_manager.start_game()
 		"SETTINGS":
-			print("open settings-label.gd")
+			game_manager.ui.set_state(game_manager.ui.UIState.SETTINGS)
+		"BACK":
+			game_manager.ui.set_state(game_manager.ui.UIState.MAIN_MENU)
 		# tell phase
 		"TRUTH":
 			await game_manager.tell_truth()
