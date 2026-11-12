@@ -37,6 +37,11 @@ const LINES := {
 	"deathmatch_tie": ["Again.", "Same rank. Again."],
 	"day_survived": ["They are out. You live.", "One more day for you."],
 	"dead": ["You are out of chips.", "That is the end of you."],
+	"they_say": [
+		"They say you hold the %s. I would not trust them.",
+		"They say you hold the %s. They might be lying.",
+		"They say you hold the %s. Believe it if you like.",
+	],
 }
 
 var _line := ""                 # current dealer line ("" once it has expired)
@@ -44,13 +49,15 @@ var _hinting := false           # a button hint is covering the dealer line
 var _timer: Tween
 var _alpha: Tween
 var _voice: AudioStreamPlayer
+var _voice_end := 0             # ticks (ms) when the current voice line finishes
 
 func _ready() -> void:
 	text = ""
 	modulate.a = 0.0
 
 # dealer line. n fills the %d in lines that have one (day number, raise size).
-func say(key: String, n := -1, voiced := true) -> void:
+func say(key: String, n = -1, voiced := true) -> void:    # n: a number or a word
+
 	var variants: Array = LINES.get(key, [])
 	if variants.is_empty():
 		push_warning("Caption: unknown line '%s'" % key)
@@ -58,18 +65,20 @@ func say(key: String, n := -1, voiced := true) -> void:
 	var i := randi() % variants.size()
 	var line: String = variants[i]
 	var file := "%s_%d" % [key, i + 1]
-	if line.contains("%d"):
-		line = line % n
-		file += "_n%d" % n
+	if line.contains("%"):
+		line = line % [n]
+		file += "_n%s" % str(n)
 	_line = "DEALER:  " + line
 
 	var hold := 2.5
 	Music.fade_out(_voice, 0.1)                     # a new line cuts the old voice
 	_voice = null
 	var path := VOICE_DIR + file + ".wav"
+	_voice_end = 0
 	if voiced and key not in TEXT_ONLY and ResourceLoader.exists(path):
 		var stream: AudioStream = load(path)
 		_voice = Music.play_sfx(stream, VOICE_DB)
+		_voice_end = Time.get_ticks_msec() + int(stream.get_length() * 1000.0)
 		hold = maxf(hold, stream.get_length() + 0.8)
 
 	if not _hinting:
@@ -97,6 +106,7 @@ func clear_hint() -> void:
 
 # wipe everything: used on death and between days
 func clear_text() -> void:
+	_voice_end = 0
 	if _timer: _timer.kill()
 	if _alpha: _alpha.kill()
 	Music.fade_out(_voice, 0.2)
@@ -120,3 +130,10 @@ func _fade_out() -> void:
 	if _alpha: _alpha.kill()
 	_alpha = create_tween()
 	_alpha.tween_property(self, "modulate:a", 0.0, 0.4)
+
+# wait until the dealer has finished the current line (returns at once if silent)
+func wait_voice(extra := 0.25) -> void:
+	var left := (_voice_end - Time.get_ticks_msec()) / 1000.0
+	if left > 0.0:
+		await get_tree().create_timer(left + extra).timeout
+		

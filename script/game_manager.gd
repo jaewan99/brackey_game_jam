@@ -85,6 +85,10 @@ func start_game() -> void:
 	_begin_match()
 
 func _begin_match() -> void:
+	if day == 1:
+		ui.caption.say("day_1")
+	else:
+		ui.caption.say("day_next", day)
 	await ScreenFx.day_card(day, DAY_SUBTITLES[day - 1] if day <= DAY_SUBTITLES.size() else "LIMBO")
 	await opponent.enter()
 	ANTE = 1
@@ -161,6 +165,9 @@ func _opponent_tell() -> void:
 func _finish_tell_phase() -> void:
 	ui.set_state(ui.UIState.NONE)
 	await player_card.reveal_to_forehead(card_player_point, player_card.TransformPreset.PLAYERREVEAL,deck.get_card_texture_path(opponent_tell))
+	ui.caption.say("they_say", deck.RANK_NAMES[deck.get_rank(opponent_tell)])
+	await get_tree().create_timer(1.8).timeout         # time to read it before betting opens
+	await ui.caption.wait_voice()
 	_start_deal_phase()
 
 #--------------------------------------deal phase
@@ -181,11 +188,15 @@ func _betting_phase() -> void:
 			break
 		var legal := _legal_actions(seat)
 		ui.update_action_visibility(seat == Turn.PLAYER, legal)
+		if seat == Turn.OPPONENT:
+			await get_tree().create_timer(randf_range(0.9, 1.7)).timeout   # thinking
 		var ctrl = player_controller if seat == Turn.PLAYER else opponent_controller
 		var action = await ctrl.request_action(_build_view(seat))
 		if action not in legal:
 			action = _fallback(legal)
 		await apply_action(seat, action)
+		await ui.caption.wait_voice()           # let "They fold." finish
+		await get_tree().create_timer(0.3).timeout
 		ScreenFx.set_tension(_pot_tension())
 		if _bet_over(action):
 			break
@@ -253,6 +264,7 @@ func _open_phase() -> void:
 	_pay_pot(winner) # no await: starts flying
 	await _settle_lie_penalty()            # penalty flies at the same time
 	await get_tree().create_timer(0.3).timeout   # let the pot finish landing
+	await ui.caption.wait_voice()
 	await _cleanup_round()
 	_next_round()
 
@@ -310,7 +322,7 @@ func _end_run() -> void:
 func _advance_day() -> void:
 	ui.caption.say("day_survived")
 	await opponent.leave()
-	ui.caption.clear()
+	ui.caption.clear_text()
 	day += 1
 	_record_day()
 	ScreenFx.blood_flash(0.6, Color("d9b45c"))   # gold "you survived" flash
@@ -389,7 +401,7 @@ func _record_day() -> void:
 		_save_best_day()
 
 func _reset_game_and_return_to_main() -> void:
-	ui.caption.clear()
+	ui.caption.clear_text()
 	ScreenFx.set_tension(0.0)              # kill the heartbeat
 	ui.chips_ui.visible = false
 	pot = 0
@@ -488,6 +500,7 @@ func _settle_lie_penalty() -> void:
 # tie at showdown but someone is broke -> nobody can ante again, so settle it now:
 # flip one card each, face-up, until the ranks differ. Winner takes the pot.
 func _deathmatch() -> void:
+	ui.caption.say("deathmatch")
 	ScreenFx.set_tension(1.0)
 	while true:
 		player_card_number = deck.draw_card()      # deck rebuilds itself when empty
@@ -509,9 +522,10 @@ func _deathmatch() -> void:
 		var p_rank: int = deck.get_rank(player_card_number)
 		var o_rank: int = deck.get_rank(opponent_card_number)
 		if p_rank == o_rank:
-			ui.caption.say("win_hand" if p_rank > o_rank else "lose_hand")
+			ui.caption.say("deathmatch_tie")
 			await _pay_pot(null)                   # grey flash, pot stays, go again
 			await _cleanup_round()
+			await ui.caption.wait_voice()
 			continue
 		ui.caption.say("win_hand" if p_rank > o_rank else "lose_hand")
 		await _pay_pot(Turn.PLAYER if p_rank > o_rank else Turn.OPPONENT)

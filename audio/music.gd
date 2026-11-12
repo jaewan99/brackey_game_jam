@@ -78,7 +78,7 @@ func stop_bgm(fade := 1.5) -> void:
 		_bgm = null
 
 # fade a playing sfx out early (for long files like the 60s film flutter)
-func fade_out(p: AudioStreamPlayer, time := 0.4) -> void:
+func fade_out(p, time := 0.4) -> void:
 	if not is_instance_valid(p):
 		return
 	var t := create_tween()
