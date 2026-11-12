@@ -189,9 +189,10 @@ func _betting_phase() -> void:
 		var legal := _legal_actions(seat)
 		ui.update_action_visibility(seat == Turn.PLAYER, legal)
 		if seat == Turn.OPPONENT:
-			await get_tree().create_timer(randf_range(0.9, 1.7)).timeout   # thinking
+			await ui.caption.wait_voice()           # let "They fold." finish
 		var ctrl = player_controller if seat == Turn.PLAYER else opponent_controller
 		var action = await ctrl.request_action(_build_view(seat))
+		ui.update_action_visibility(false, [])
 		if action not in legal:
 			action = _fallback(legal)
 		await apply_action(seat, action)
