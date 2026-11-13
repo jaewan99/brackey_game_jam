@@ -20,6 +20,7 @@
 [ext_resource type="Script" uid="uid://cqd2uvgk63nse" path="res://script/settings_menu.gd" id="13_rigyf"]
 [ext_resource type="PackedScene" uid="uid://ddamdm11qakt" path="res://chips/chips.tscn" id="14_87ufc"]
 [ext_resource type="FontFile" uid="uid://c4lv6nd8vrnay" path="res://art/fontstyle/EBGaramond/EBGaramond12-Regular.ttf" id="14_holqj"]
+[ext_resource type="Shader" uid="uid://bvjhmt7cm0hou" path="res://chips/shader/liquid_text.gdshader" id="14_rsp6y"]
 [ext_resource type="Texture2D" uid="uid://b5gsqgwrbul8l" path="res://card/cards/2_of_spades.png" id="16_jht16"]
 [ext_resource type="FontFile" uid="uid://ypaao7bra87o" path="res://art/fontstyle/EBGaramond/EBGaramond12-Italic.ttf" id="16_peq34"]
 [ext_resource type="Script" uid="uid://8ac57paucltx" path="res://script/caption_ui.gd" id="17_bj1e4"]
@@ -36,6 +37,19 @@ shader_parameter/outer = 0.95
 shader = ExtResource("2_vgf7k")
 shader_parameter/color_levels = 9
 shader_parameter/posterize_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ne07e"]
+shader = ExtResource("14_rsp6y")
+shader_parameter/cloud_dark = Color(0.70980394, 0.70980394, 0.70980394, 1)
+shader_parameter/cloud_mid = Color(0.9019608, 0.9019608, 0.9019608, 1)
+shader_parameter/cloud_light = Color(1, 1, 1, 1)
+shader_parameter/cloud_scale = 0.025
+shader_parameter/cloud_speed = 3.0
+shader_parameter/brightness = 1.15
+shader_parameter/bob_amp = 0.0
+shader_parameter/bob_speed = 3.0
+shader_parameter/bob_spread = 0.012
+shader_parameter/highlight_strength = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_peq34"]
 shader = ExtResource("13_imjiu")
@@ -178,9 +192,9 @@ anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
 offset_left = 1261.0
-offset_top = 335.20193
+offset_top = 410.202
 offset_right = 1814.0
-offset_bottom = 464.20193
+offset_bottom = 539.2019
 theme_override_font_sizes/font_size = 84
 text = "SETTINGS"
 
@@ -190,11 +204,30 @@ anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
 offset_left = 1315.0
-offset_top = 196.0
+offset_top = 271.0
 offset_right = 1702.0
-offset_bottom = 324.99997
+offset_bottom = 399.99994
 theme_override_font_sizes/font_size = 84
 text = "START"
+
+[node name="IndianPoker" type="Label" parent="UI/MainMenuUI" unique_id=1110051438]
+material = SubResource("ShaderMaterial_ne07e")
+layout_mode = 0
+offset_left = 300.0
+offset_top = 150.0
+offset_right = 720.0
+offset_bottom = 475.0
+scale = Vector2(1.5, 1.5)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 0.2509804)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/outline_size = 16
+theme_override_constants/shadow_outline_size = 40
+theme_override_fonts/font = ExtResource("16_peq34")
+theme_override_font_sizes/font_size = 160
+text = "Indian
+Poker"
+horizontal_alignment = 1
 
 [node name="PauseMenuUI" type="Control" parent="UI" unique_id=1890518175]
 visible = false
